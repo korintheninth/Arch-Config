@@ -1,0 +1,126 @@
+
+/* ---- Configuration ---- */
+configuration {
+    modi:                       "dmenu";
+    font:                       "JetBrains Mono Nerd Font 11";
+    show-icons:                 false;
+}
+
+/* ---- Load colors ---- */
+/* Adjust this path if your colors file is named differently */
+@theme "~/.config/rofi/colors.rasi"
+
+/* ---- Window ---- */
+window {
+    width:                       25em;        /* Compact width */
+    location:                    center;      /* Middle of screen */
+    anchor:                      center;      /* Anchor to middle */
+    fullscreen:                  false;
+    transparency:                "real";      /* Enable transparency */
+    
+    border:                      2px;         /* Standard border */
+    border-color:                @primary;    /* Uses your theme color */
+    border-radius:               10px;        /* Rounded corners */
+    
+    background-color:            @background; /* Solid or semi-transparent based on theme */
+    padding:                     10px;        /* Slight internal padding */
+    spacing:                     0;
+    cursor:                      "default";
+}
+
+/* ---- Main Box ---- */
+mainbox {
+    enabled:                     true;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+    background-color:            transparent;
+    spacing:                     10px;        /* Space between input and list */
+}
+
+/* ---- Input Bar ---- */
+inputbar {
+    enabled:                     true;
+    padding:                     8px;
+    background-color:            @surface;    /* Distinct background for input */
+    border-radius:               8px;
+    text-color:                  @on-surface;
+    children:                    [ "prompt", "entry" ];
+    spacing:                     10px;
+}
+
+prompt {
+    enabled:                     true;
+    text-color:                  inherit;
+    background-color:            transparent;
+}
+
+entry {
+    enabled:                     true;
+    text-color:                  inherit;
+    background-color:            transparent;
+    placeholder:                 "Search";
+    placeholder-color:           inherit;
+    cursor:                      text;
+}
+
+/* ---- List View ---- */
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:                       6;           /* Limits height to 6 items (compact) */
+    cycle:                       true;
+    dynamic:                     true;        /* Shrinks if fewer than 6 items */
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                false;       /* Allows shrinking */
+    fixed-columns:               true;
+    
+    spacing:                     5px;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    cursor:                      "default";
+}
+
+/* ---- Elements ---- */
+element {
+    enabled:                     true;
+    padding:                     6px 10px;    /* Compact element padding */
+    border-radius:               6px;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    cursor:                      pointer;
+}
+
+element normal.normal {
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+
+element selected.normal {
+    background-color:            @primary;    /* Highlight color */
+    text-color:                  @background; /* Text color on highlight */
+}
+
+element alternate.normal {
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+
+/* ---- Text ---- */
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    highlight:                   inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}
+
+/* ---- Error Message ---- */
+error-message {
+    padding:                     15px;
+    border-radius:               10px;
+    background-color:            @background;
+    text-color:                  @on-surface;
+}

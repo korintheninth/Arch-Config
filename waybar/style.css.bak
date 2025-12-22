@@ -1,0 +1,544 @@
+/*
+ * __        __          _                  ____  _         _
+ * \ \      / /_ _ _   _| |__   __ _ _ __  / ___|| |_ _   _| | ___
+ *  \ \ /\ / / _` | | | | '_ \ / _` | '__| \___ \| __| | | | |/ _ \
+ *   \ V  V / (_| | |_| | |_) | (_| | |     ___) | |_| |_| | |  __/
+ *    \_/\_/ \__,_|\__, |_.__/ \__,_|_|    |____/ \__|\__, |_|\___|
+ *                 |___/                              |___/
+ *
+ * -----------------------------------------------------
+*/
+@import 'colors.css';
+@define-color backgroundlight #FFFFFF;
+@define-color backgrounddark #FFFFFF;
+@define-color workspacesbackground1 #FFFFFF;
+@define-color workspacesbackground2 #CCCCCC;
+@define-color bordercolor #FFFFFF;
+@define-color textcolor shade(@primary_container, 0.5);
+@define-color textcolor1 shade(@primary_container, 0.5);
+@define-color textcolor2 shade(@primary_container, 0.5);
+@define-color textcolor3 #FFFFFF;
+@define-color iconcolor shade(@primary_container, 0.5);
+
+/* -----------------------------------------------------
+ * General
+ * ----------------------------------------------------- */
+
+* {
+    font-family: "Fira Sans Semibold", "Font Awesome 7 Free", "Font Awesome 7 Brands", "Font Awesome 6 Free", "Font Awesome 6 Brands", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    border: none;
+    border-radius: 0px;
+}
+
+window#waybar {
+    background-color: rgba(0,0,0,0);
+    border-bottom: 0px solid #ffffff;
+    transition-property: background-color;
+}
+
+@keyframes rainbow {
+  to {
+  border-image-source: linear-gradient(450deg, @primary, @source_color, @secondary, @tertiary, @secondary_fixed_dim);
+  }
+}
+
+.modules-left {
+  padding-left: 10px;
+  background-color: @source_color;
+  border-radius: 0px;
+  border-style: double;
+  border-width: 2px;
+  margin-bottom: 4px;
+  margin-top: 3px;
+  margin-left: 5px;
+  box-shadow: 0px 0px 3px 2px shade(@source_color, 0.55);
+  border-image-slice: 1;
+  border-image-source: linear-gradient(90deg, @primary, @source_color, @secondary, @tertiary, @secondary_fixed_dim);
+  animation: rainbow 20s linear infinite;
+}
+
+.modules-center {
+  background-color: @source_color;
+  border-radius: 0px;
+  border-style: double;
+  border-width: 2px;
+  margin-bottom: 4px;
+  margin-top: 3px;
+  box-shadow: 0px 0px 3px 2px shade(@source_color, 0.55);
+  border-image-slice: 1;
+  border-image-source: linear-gradient(90deg, @primary, @source_color, @secondary, @tertiary, @secondary_fixed_dim);
+  animation: rainbow 20s linear infinite;
+}
+.modules-right {
+  padding-left: 10px;
+  background-color: @source_color;
+  border-radius: 0px;
+  border-style: double;
+  border-width: 2px;
+  margin-bottom: 4px;
+  margin-top: 3px;
+  margin-right: 5px;
+  box-shadow: 0px 0px 3px 2px shade(@source_color, 0.55);
+  border-image-slice: 1;
+  border-image-source: linear-gradient(90deg, @primary, @source_color, @secondary, @tertiary, @secondary_fixed_dim);
+  animation: rainbow 20s linear infinite;
+}
+
+/* -----------------------------------------------------
+ * Workspaces
+ * ----------------------------------------------------- */
+
+#workspaces {margin: 0px 10px 0px 3px}
+#workspaces button {
+    margin-right: 2px;
+    border-radius: 50%;
+    padding: 0 4px 0 4px;
+    font-size: 14px;
+    color: @primary;
+    transition: background 0.3s;
+    margin-bottom: 6px;
+    box-shadow: 0px 3px 0px 0px shade(@source_color, 0.7);
+}
+#workspaces button.active {
+    background: @primary_container;
+    color: @primary;
+    margin-bottom: 6px;
+    box-shadow: 0px 3px 0px 0px shade(@primary_container, 0.5);
+}
+#workspaces button.active:hover {
+    background: @primary_container;
+    color: @primary;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    box-shadow: 0px 0px 0px 0px shade(@primary_container, 0.5);
+}
+#workspaces button:hover {
+    background: @source_color;
+    color: @primary;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    box-shadow: 0px 0px 0px 0px shade(@on_primary, 0.5);
+}
+
+/* -----------------------------------------------------
+ * Tooltips
+ * ----------------------------------------------------- */
+
+tooltip {
+    border-radius: 16px;
+    background-color: @on_primary;
+    opacity:0.9;
+    padding:20px;
+    margin:0px;
+}
+
+tooltip label {
+    color: @textcolor2;
+    background: @on_primary;
+    background-color: @on_primary;
+}
+
+/* -----------------------------------------------------
+ * Window
+ * ----------------------------------------------------- */
+
+#window {
+    margin: 0px 15px 0px 0px;
+    border-radius: 12px;
+    color:@textcolor;
+    font-size:14px;
+    font-weight:normal;
+}
+
+window#waybar.empty #window {
+    background-color:transparent;
+}
+
+/* -----------------------------------------------------
+ * Modules
+ * ----------------------------------------------------- */
+
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+/* -----------------------------------------------------
+ * Custom Quicklinks
+ * ----------------------------------------------------- */
+
+#custom-brave,
+#custom-browser,
+#custom-keybindings,
+#custom-outlook,
+#custom-filemanager,
+#custom-teams,
+#custom-chatgpt,
+#custom-calculator,
+#custom-windowsvm,
+#custom-cliphist,
+#custom-settings,
+#custom-wallpaper,
+#custom-system,
+#custom-hyprshade,
+#custom-hypridle,
+#custom-tools,
+#custom-quicklink_chromium,
+#custom-quicklink_edge,
+#custom-quicklink_browser,
+#custom-quicklink_filemanager,
+#custom-quicklink_email,
+#custom-quicklink_thunderbird,
+#custom-quicklink_calculator,
+#custom-sidepad,
+#custom-quicklink1,
+#custom-quicklink2,
+#custom-quicklink3,
+#custom-quicklink4,
+#custom-quicklink5,
+#custom-quicklink6,
+#custom-quicklink7,
+#custom-quicklink8,
+#custom-quicklink9,
+#custom-quicklink10,
+#custom-quicklink_firefox,
+#custom-quicklink_steam,
+#custom-waybarthemes {
+    margin-right: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    color: @iconcolor;
+}
+
+#custom-tools {
+    margin-right:12px;
+}
+
+#custom-hyprshade {
+    margin-right:12px;
+}
+
+#custom-hypridle {
+    margin-right:16px;
+}
+
+#custom-hypridle.active {
+    color: @iconcolor;
+}
+
+#custom-hypridle.notactive {
+    color: #dc2f2f;
+}
+
+#custom-settings {
+    margin-right: 15px;
+}
+
+#custom-browser {
+    margin-right: 12px;
+}
+
+#custom-wallpaper {
+    margin-right: 14px;
+}
+
+#custom-backlight {
+    margin-right: 12px;
+}
+
+#custom-quicklink_brave {
+    margin-right: 12px;
+}
+
+#custom-chatgpt {
+    margin-right: 10px;
+    background-image: url("../assets/ai-icon-20.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-right: 23px;
+}
+
+
+/* -----------------------------------------------------
+ * Idle Inhibitor
+ * ----------------------------------------------------- */
+
+ #idle_inhibitor {
+    margin-right: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: @iconcolor;
+}
+
+#idle_inhibitor.activated {
+    margin-right: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #dc2f2f;
+}
+
+/* -----------------------------------------------------
+ * Custom Modules
+ * ----------------------------------------------------- */
+
+#custom-appmenuicon {
+    font-size: 20px;
+    background-image: url('/home/korin/.config/waybar/icons/arch.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: @primary_container;
+    border-radius: 15px;
+    color: @textcolor;
+    padding: 0px 20px 0px 20px;
+    margin: 0px 15px 3px 5px;
+    box-shadow: 0px 3px 0px 0px shade(@primary_container, 0.75);
+}
+
+#custom-appmenuicon:hover {
+    margin-top: 3px;
+    margin-bottom: 0px;
+    box-shadow: 0px 0px 0px 0px shade(@primary_container, 0.75);
+}
+
+/* -----------------------------------------------------
+ * Custom Notification
+ * ----------------------------------------------------- */
+
+ #custom-notification {
+    margin: 0px 13px 0px 0px;
+    padding:0px;
+    font-size:20px;
+    color: @iconcolor;
+    opacity: 0.8;
+}
+
+/* -----------------------------------------------------
+ * Custom Exit
+ * ----------------------------------------------------- */
+
+#custom-exit {
+    font-size: 20px;
+    background-image: url('/home/korin/.config/waybar/icons/arch.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: @primary_container;
+    border-radius: 15px;
+    color: @textcolor;
+    padding: 0px 20px 0px 20px;
+    margin: 0px 10px 6px 0px;
+    box-shadow: 0px 3px 0px 0px shade(@primary_container, 0.75);
+}
+
+#custom-exit:hover {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    box-shadow: 0px 0px 0px 0px shade(@primary_container, 0.75);
+}
+
+/* -----------------------------------------------------
+ * Custom Updates
+ * ----------------------------------------------------- */
+
+#custom-updates {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+}
+
+#custom-updates.green {
+}
+
+#custom-updates.yellow {
+    color: #ff9a3c;
+}
+
+#custom-updates.red {
+    color: #dc2f2f;
+}
+
+/* -----------------------------------------------------
+ * Custom Youtube
+ * ----------------------------------------------------- */
+
+#custom-youtube {
+    background-color: @backgroundlight;
+    font-size: 14px;
+    color: @textcolor2;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+}
+
+/* -----------------------------------------------------
+ * Hardware Group
+ * ----------------------------------------------------- */
+
+ #disk,#memory,#cpu,#language,#custom-temps {
+    margin:0px;
+    padding:0px;
+    font-size:14px;
+    color:@iconcolor;
+}
+
+#language {
+    margin-right:10px;
+}
+/* -----------------------------------------------------
+ * Power Profiles Daemon
+ * ----------------------------------------------------- */
+
+ #power-profiles-daemon {
+    margin: 0px 13px 0px 0px;
+    padding:0px;
+    font-size:14px;
+    color:@iconcolor;
+}
+
+/* -----------------------------------------------------
+ * Clock
+ * ----------------------------------------------------- */
+
+#clock {
+    min-width: 220px;
+    font-size: 15px;
+    color: @textcolor;
+    margin: 0px 15px 0px 15px;
+}
+
+/* -----------------------------------------------------
+ * Backlight
+ * ----------------------------------------------------- */
+
+ #backlight, #custom-backlight {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+    background-color: transparent;
+}
+
+/* -----------------------------------------------------
+ * Pulseaudio
+ * ----------------------------------------------------- */
+
+ #pulseaudio {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+}
+
+#pulseaudio.muted {
+    color: @textcolor;
+}
+
+/* -----------------------------------------------------
+ * Network
+ * ----------------------------------------------------- */
+
+#network {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+}
+
+#network.ethernet {
+    color: @textcolor;
+}
+
+#network.wifi {
+    color: @textcolor;
+}
+
+/* -----------------------------------------------------
+ * Bluetooth
+ * ----------------------------------------------------- */
+
+ #bluetooth, #bluetooth.on, #bluetooth.connected {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 10px 15px 10px 0px;
+}
+
+#bluetooth.off {
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* -----------------------------------------------------
+ * Battery
+ * ----------------------------------------------------- */
+
+#battery {
+    font-size: 14px;
+    color: @textcolor;
+    border-radius: 15px;
+    margin: 0px 15px 0px 0px;
+}
+
+#battery.charging, #battery.plugged {
+    color: @textcolor;
+}
+
+@keyframes blink {
+    to {
+        background-color: @backgroundlight;
+        color: @textcolor2;
+    }
+}
+
+#battery.critical:not(.charging) {
+    color: #f53c3c;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+/* -----------------------------------------------------
+ * Tray
+ * ----------------------------------------------------- */
+
+#tray {
+    margin:0px 10px 0px 0px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #eb4d4b;
+}
+
+#taskbar {
+    background: rgba(0.0, 0.0, 0.0, 0.42);
+    margin: 0px 5px 0px 0px;
+    padding:0;
+    border-radius: 5px;
+    font-weight: normal;
+    font-style: normal;
+    opacity: 1.0;
+}
+
+#taskbar button {
+  padding: 0px 4px 0px 4px;
+  border-radius: 5px;
+  color: @textcolor1;
+}
+
+#taskbar:hover {
+    background: @on_primary;
+    color: @textcolor1;
+    border-radius: 5px;
+}

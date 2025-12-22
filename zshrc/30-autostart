@@ -1,0 +1,27 @@
+# -----------------------------------------------------
+# AUTOSTART
+# -----------------------------------------------------
+
+# -----------------------------------------------------
+# Fastfetch
+# -----------------------------------------------------
+
+cfetch() {
+    # 1. Run fastfetch once to measure the raw width.
+    #    We strip all ANSI escape codes (colors, cursor moves) to get the true text length.
+    local width
+    width=$(fastfetch "$@" | perl -pe 's/\x1b\[[0-9;]*[mGKH]//g' | wc -L)
+
+    # 2. Calculate the left padding to center it.
+    local pad
+    pad=$(( ($(tput cols) - width) / 2 ))
+
+    # 3. Run fastfetch again, passing the calculated padding.
+    #    This forces fastfetch to render the spacing internally, avoiding the "top line shift" bug.
+    fastfetch "$@" --logo-padding-left "$pad"
+}
+
+if [[ $(tty) == *"pts"* ]]; then
+    cfetch
+fi
+fortune -e wisdom literature | boxes -d ansi | awk -v w=$(tput cols) '{pad=int((w-length($0))/2); printf "%*s%s\n", pad, "", $0}'

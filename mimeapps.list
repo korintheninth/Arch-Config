@@ -1,0 +1,19 @@
+[Default Applications]
+image/gif=org.gnome.Loupe.desktop
+image/svg+xml=org.gnome.Loupe.desktop
+text/plain=org.gnome.TextEditor.desktop
+x-scheme-handler/msteams=teams.desktop
+x-scheme-handler/discord-831593107883032657=discord-831593107883032657.desktop
+application/json=org.gnome.TextEditor.desktop
+x-scheme-handler/pttp=CiscoPacketTracerPtsa-9.0.0.desktop
+application/x-pka=CiscoPacketTracer-9.0.0.desktop
+application/x-pkt=CiscoPacketTracer-9.0.0.desktop
+application/x-pkz=CiscoPacketTracer-9.0.0.desktop
+application/x-pksz=CiscoPacketTracer-9.0.0.desktop
+
+[Added Associations]
+image/gif=vlc.desktop;feh.desktop;org.gnome.Loupe.desktop;
+image/png=org.gnome.Loupe.desktop;
+image/svg+xml=org.gnome.Loupe.desktop;
+text/plain=org.gnome.TextEditor.desktop;
+application/json=org.gnome.TextEditor.desktop;

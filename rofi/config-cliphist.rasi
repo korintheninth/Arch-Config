@@ -1,0 +1,163 @@
+/*
+#  Compact Clipboard Manager (Top Right)
+*/
+
+/* ---- Configuration ---- */
+configuration {
+    modi:                       "dmenu";
+    font:                       "Fira Sans 11";
+    show-icons:                 false;
+}
+
+/* ---- Load colors ---- */
+@theme "~/.config/rofi/colors.rasi"
+
+/* ---- Load wallpaper ---- */
+@import "~/.cache/hyprland-dotfiles/current_wallpaper.rasi"
+
+/* ---- Map colors ---- */
+* {
+    color11: @primary;
+    color5: @on-primary-fixed;
+    foreground: @on-surface;
+}
+
+/* ---- Window ---- */
+window {
+    width:                       25em;
+    location:                    northeast;   /* Top Right */
+    anchor:                      northeast;   /* Anchor to Top Right */
+    x-offset:                    -20px;       /* Margin from right edge */
+    y-offset:                    20px;        /* Margin from top edge */
+    fullscreen:                  false;
+    transparency:                "real";
+    
+    border:                      2px;
+    border-color:                @primary;
+    border-radius:               10px;
+    
+    background-color:            @background;
+    spacing:                     0;
+    padding:                     10px;
+    cursor:                      "default";
+    enabled:                     true;
+}
+
+/* ---- Main Box ---- */
+mainbox {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     0em;
+    orientation:                 vertical;
+    children:                    [ "listbox" ];
+    background-color:            transparent;
+    background-image:            @current-image;
+}
+
+/* ---- Input Bar ---- */
+inputbar {
+    enabled:                     true;
+    padding:                     8px;
+    margin:                      0;
+    children:                    [ "textbox-prompt-colon", "entry" ];
+    border-radius:               8px;
+    background-color:            @surface;
+}
+
+textbox-prompt-colon {
+    enabled:                     true;
+    expand:                      false;
+    str:                         "  ";
+    padding:                     0.5em 0.3em 0 0;
+    text-color:                  @on-surface;
+    background-color:            transparent;
+}
+
+entry {
+    enabled:                     true;
+    padding:                     0.5em;
+    text-color:                  @on-surface;
+    cursor:                      text;
+    placeholder:                 "Search Clipboard";
+    background-color:            transparent;
+    placeholder-color:           inherit;
+}
+
+/* ---- List Box (Wrapper) ---- */
+listbox {
+    padding:                     0em;
+    spacing:                     0em;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+    background-color:            transparent;
+}
+
+/* ---- List View ---- */
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:                       8;
+    cycle:                       false;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                false;
+    fixed-columns:               true;
+    
+    spacing:                     5px;
+    padding:                     10px 0 0 0;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    cursor:                      "default";
+}
+
+/* ---- Elements ---- */
+element {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     6px 10px;
+    cursor:                      pointer;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    border-radius:               6px;
+}
+
+element selected.normal {
+    background-color:            @primary;
+    text-color:                  @background;
+    border-radius:               6px;
+}
+
+element normal.normal {
+    background-color:            inherit;
+    text-color:                  @on-surface;
+}
+
+element alternate.normal {
+    background-color:            inherit;
+    text-color:                  @on-surface;
+}
+
+element-text {
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+
+/* ---- Error Message ---- */
+error-message {
+    text-color:                  @on-surface;
+    background-color:            @background;
+    text-transform:              capitalize;
+    children:                    [ "textbox" ];
+}
+
+textbox {
+    text-color:                  inherit;
+    background-color:            inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+}

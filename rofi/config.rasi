@@ -1,0 +1,149 @@
+/* ---- Configuration ---- */
+configuration {
+    modi:                       "drun";
+    font:                       "Fira Sans 11";
+    show-icons:                 true;
+    drun-display-format:        "{name}";
+    hover-select:               false;
+    scroll-method:              1;
+    me-select-entry:            "";
+    me-accept-entry:            "MousePrimary";
+}
+
+/* ---- Load colors ---- */
+@theme "~/.config/rofi/colors.rasi"
+
+/* ---- Window ---- */
+window {
+    width:                       25em;        /* Compact width to match */
+    location:                    center;      /* Center of screen */
+    anchor:                      center;
+    fullscreen:                  false;
+    transparency:                "real";
+    
+    border:                      2px;
+    border-color:                @primary;
+    border-radius:               10px;        /* Rounded corners */
+    
+    background-color:            @background;
+    spacing:                     0;
+    padding:                     10px;
+    cursor:                      "default";
+    enabled:                     true;
+}
+
+/* ---- Main Box ---- */
+mainbox {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     0em;
+    orientation:                 vertical;    /* Vertical stack */
+    children:                    [ "inputbar", "listview" ];
+    background-color:            transparent;
+}
+
+/* ---- Input Bar ---- */
+inputbar {
+    enabled:                     true;
+    padding:                     8px;
+    margin:                      0;
+    children:                    [ "textbox-prompt-colon", "entry" ];
+    border-radius:               8px;
+    background-color:            @surface;
+}
+
+textbox-prompt-colon {
+    enabled:                     true;
+    expand:                      false;
+    str:                         "  ";
+    padding:                     0.5em 0.3em 0 0;
+    text-color:                  @on-surface;
+    background-color:            transparent;
+}
+
+entry {
+    enabled:                     true;
+    padding:                     0.5em;
+    text-color:                  @on-surface;
+    cursor:                      text;
+    placeholder:                 "Search Apps";
+    background-color:            transparent;
+    placeholder-color:           inherit;
+}
+
+/* ---- List View ---- */
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:                       6;           /* Limit height */
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                false;
+    fixed-columns:               true;
+    
+    spacing:                     5px;
+    padding:                     0;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    cursor:                      "default";
+}
+
+/* ---- Elements ---- */
+element {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     6px 10px;
+    cursor:                      pointer;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+    border-radius:               6px;
+}
+
+element selected.normal {
+    background-color:            @primary;
+    text-color:                  @background; /* Contrast text */
+    border-radius:               6px;
+}
+
+element normal.normal {
+    background-color:            inherit;
+    text-color:                  @on-surface;
+}
+
+element alternate.normal {
+    background-color:            inherit;
+    text-color:                  @on-surface;
+}
+
+element-icon {
+    size:                        1.5em;       /* Smaller icons for compact look */
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+
+element-text {
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+
+/* ---- Error Message ---- */
+error-message {
+    text-color:                  @on-surface;
+    background-color:            @background;
+    text-transform:              capitalize;
+    children:                    [ "textbox" ];
+}
+
+textbox {
+    text-color:                  inherit;
+    background-color:            inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+}
