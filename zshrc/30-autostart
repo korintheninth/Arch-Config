@@ -21,7 +21,17 @@ cfetch() {
     fastfetch "$@" --logo-padding-left "$pad"
 }
 
+cbox() {
+    # If an argument is provided, use it; otherwise read from Stdin
+    if [ -t 0 ]; then
+        echo "$*"
+    else
+        cat
+    fi | boxes -d ansi | awk -v w=$(tput cols) '{pad=int((w-length($0))/2); printf "%*s%s\n", pad, "", $0}'
+}
+
 if [[ $(tty) == *"pts"* ]]; then
     cfetch
 fi
-fortune -e wisdom literature | boxes -d ansi | awk -v w=$(tput cols) '{pad=int((w-length($0))/2); printf "%*s%s\n", pad, "", $0}'
+
+fortune ~/.config/quotes/quotes | cbox
