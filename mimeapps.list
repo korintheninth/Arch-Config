@@ -10,6 +10,7 @@ application/x-pka=CiscoPacketTracer-9.0.0.desktop
 application/x-pkt=CiscoPacketTracer-9.0.0.desktop
 application/x-pkz=CiscoPacketTracer-9.0.0.desktop
 application/x-pksz=CiscoPacketTracer-9.0.0.desktop
+video/webm=vlc.desktop
 
 [Added Associations]
 image/gif=vlc.desktop;feh.desktop;org.gnome.Loupe.desktop;
@@ -17,3 +18,5 @@ image/png=org.gnome.Loupe.desktop;
 image/svg+xml=org.gnome.Loupe.desktop;
 text/plain=org.gnome.TextEditor.desktop;
 application/json=org.gnome.TextEditor.desktop;
+video/webm=vlc.desktop;
+application/vnd.sqlite3=libreoffice-base.desktop;

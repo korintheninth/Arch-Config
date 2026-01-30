@@ -32,6 +32,7 @@ pulse
 QGroundControl
 QtProject.conf
 systemd
+torbrowser
 unity*
 user*
 vlc
@@ -44,5 +45,5 @@ Electron
 GIMP
 github-copilot
 wally
-
+Ultralytics
 

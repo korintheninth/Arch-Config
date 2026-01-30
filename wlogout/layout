@@ -17,6 +17,12 @@
     "keybind" : "u"
 }
 {
+    "label" : "hibernate",
+    "action" : "~/.config/hypr/scripts/power.sh hibernate",
+    "text" : "Hibernate",
+    "keybind" : "h"
+}
+{
     "label" : "reboot",
     "action" : "~/.config/hypr/scripts/power.sh reboot",
     "text" : "Restart",
