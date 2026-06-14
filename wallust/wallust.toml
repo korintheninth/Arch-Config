@@ -11,7 +11,7 @@
 
 # How the image is parse, in order to get the colors:
 # full - resized - wal - thumb -  fastresize - kmeans
-backend = "fastresize"
+backend = "wal"
 
 # What color space to use to produce and select the most prominent colors:
 # lab - labmixed - lch - lchmixed
@@ -23,20 +23,22 @@ color_space = "lch"
 # harddark - harddark16 - harddarkcomp - harddarkcomp16
 # softdark - softdark16 - softdarkcomp - softdarkcomp16
 # softlight - softlight16 - softlightcomp - softlightcomp16
-palette = "dark16"
+palette = "harddark"
 
 # Ensures a "readable contrast" (OPTIONAL, disabled by default)
 # Should only be enabled when you notice an unreadable contrast frequently happening
 # with your images. The reference color for the contrast is the background color.
-#check_contrast = true
+check_contrast = false
 
 # Color saturation, between [1% and 100%] (OPTIONAL, disabled by default)
 # usually something higher than 50 increases the saturation and below
 # decreases it (on a scheme with strong and vivid colors)
-#saturation = 35
+#saturation = 70
 
 # Alpha value for templating, by default 100 (no other use whatsoever)
 #alpha = 100
+
+#threshold = 0
 
 [templates]
 # NOTE: prefer '' over "" for paths, avoids escaping.
@@ -45,7 +47,9 @@ palette = "dark16"
 # ¡ If either one is a directory, then both SHOULD be one. !
 # zathura = { template = 'zathura', target = '~/.config/zathura/zathurarc' }
 kitty = {template = 'kitty_template.conf', target = '~/.config/kitty/colors.conf'}
-waybar = {template = 'waybar_template.css', target = '~/.config/waybar/colors.css'}
-swaync = {template = 'waybar_template.css', target = '~/.config/swaync/colors.css'}
 cursor = {template = 'colors-wal', target = '~/.cache/wal/colors'}
 cursor2 = {template = 'colors-wal.json', target = '~/.cache/wal/colors.json'}
+quickshell = {template = 'quickshell.qml', target = '~/.config/quickshell/themes/Colors.qml'}
+keyboard = {template = 'keyboard_template.txt', target = '~/.cache/hyprland-dotfiles/keyboard.txt'}
+hypr = {template = 'hyprland.lua', target = '~/.config/hypr/colors.lua'}
+hyprlock = {template = 'hyprlock.conf', target = '~/.config/hypr/colors.conf'}

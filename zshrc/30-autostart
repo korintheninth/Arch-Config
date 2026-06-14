@@ -6,6 +6,41 @@
 # Fastfetch
 # -----------------------------------------------------
 
+center_text() {
+  local term_width="${COLUMNS:-$(tput cols < /dev/tty 2>/dev/null || echo 80)}"
+  local input width pad spaces
+
+  # 1. Capture all input as a single raw block to preserve colors and formatting
+  if [[ ! -t 0 ]]; then
+    input="$(cat)"
+  elif [[ $# -gt 0 ]]; then
+    input="$*"
+  else
+    return
+  fi
+
+  # 2. Measure max width using your perl logic
+  # (Expanded from [mGKH] to [a-zA-Z] to safely catch all cursor movement codes)
+  width=$(printf "%s\n" "$input" | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -L)
+
+  # 3. Calculate the left padding
+  pad=0
+  if (( width < term_width )); then
+    pad=$(( (term_width - width) / 2 ))
+  fi
+
+  # 4. Apply padding using Perl
+  if (( pad > 0 )); then
+    spaces=$(printf "%*s" "$pad" "")
+    
+    # Prepend spaces to the start of the line (^). 
+    # Also inject spaces after any carriage returns (\r) to fix the first-line bug.
+    printf "%s\n" "$input" | perl -pe "s/^/$spaces/; s/\\r/\\r$spaces/g"
+  else
+    printf "%s\n" "$input"
+  fi
+}
+
 cfetch() {
     # 1. Run fastfetch once to measure the raw width.
     #    We strip all ANSI escape codes (colors, cursor moves) to get the true text length.
@@ -21,17 +56,13 @@ cfetch() {
     fastfetch "$@" --logo-padding-left "$pad"
 }
 
-cbox() {
-    # If an argument is provided, use it; otherwise read from Stdin
-    if [ -t 0 ]; then
-        echo "$*"
-    else
-        cat
-    fi | boxes -d ansi | awk -v w=$(tput cols) '{pad=int((w-length($0))/2); printf "%*s%s\n", pad, "", $0}'
-}
-
 if [[ $(tty) == *"pts"* ]]; then
     cfetch
 fi
 
-fortune ~/.config/quotes/quotes | cbox
+fortune ~/.config/quotes/quotes | boxes -d ansi | center_text
+
+# -----------------------------------------------------
+# Day Counter
+# -----------------------------------------------------
+~/Projects/Counter/counter.sh banner | center_text

@@ -14,6 +14,7 @@ nwg-dock-hyprland
 *.mp4
 *.jpg
 *.png
+*.token
 fontforge
 glib*
 go
@@ -24,6 +25,10 @@ matplotlib
 menus
 nwg*
 ow-electron
+onlyoffice
+Electron
+electron-builder.json
+evolution
 paradox*
 pavucontrol*
 Proton
@@ -34,6 +39,7 @@ QtProject.conf
 systemd
 torbrowser
 unity*
+Unity*
 user*
 vlc
 vinote
@@ -46,4 +52,18 @@ GIMP
 github-copilot
 wally
 Ultralytics
-
+gnome-builder
+kdeconnect
+pdfarranger
+sqlitebrowser
+wireplumber
+xclicker*
+xfce4
+xsettingsd
+yay
+YouTube Music
+obsidian
+obs-studio
+zoom*
+Thunar
+cursor

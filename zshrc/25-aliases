@@ -5,9 +5,13 @@
 # -----------------------------------------------------
 # General
 # -----------------------------------------------------
+alias ls='eza -a --icons=always'
+alias ll='eza -al --icons=always'
+alias lt='eza -a --tree --level=1 --icons=always'
 alias c='clear'
-alias nf='fastfetch'
-alias pf='fastfetch'
 alias ff='fastfetch'
-alias shutdown='systemctl poweroff'
 alias icat='kitty +kitten icat'
+alias cst='~/aspower/cst-4.0.1/linux64/bin/cst'
+alias tasks='python3 /home/korin/Projects/reminder/tasks.py'
+alias perflog='~/Projects/performance_tracker/today.sh'
+alias counter='~/Projects/Counter/counter.sh'

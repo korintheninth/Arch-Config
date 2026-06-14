@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Keymapp
-Exec="/usr/bin/keymapp"
-X-GNOME-Autostart-enabled=true

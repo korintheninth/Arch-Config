@@ -1,0 +1,5 @@
+* {
+    menu-radius: 0px;
+    element-radius: 0px;
+    input-radius: 0px;
+}

@@ -1,0 +1,5 @@
+[mgr]
+prepend_keymap = [
+  { on = [ "g", "t" ], run = "cd ~/.local/share/Trash/files", desc = "Go to the trash directory" },
+  { on = ["Y"], run = "shell 'wl-copy -t $(file -b --mime-type \"$1\") < \"$1\"' --confirm", desc = "Copy file content to system clipboard" }
+]

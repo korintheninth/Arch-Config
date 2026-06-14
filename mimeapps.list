@@ -11,6 +11,15 @@ application/x-pkt=CiscoPacketTracer-9.0.0.desktop
 application/x-pkz=CiscoPacketTracer-9.0.0.desktop
 application/x-pksz=CiscoPacketTracer-9.0.0.desktop
 video/webm=vlc.desktop
+image/jpeg=org.gnome.Loupe.desktop
+image=org.gnome.Loupe.desktop
+image/png=org.gnome.Loupe.desktop
+image/webp=org.gnome.Loupe.desktop
+text/html=helium.desktop
+x-scheme-handler/http=helium.desktop
+x-scheme-handler/https=helium.desktop
+x-scheme-handler/about=helium.desktop
+x-scheme-handler/unknown=helium.desktop
 
 [Added Associations]
 image/gif=vlc.desktop;feh.desktop;org.gnome.Loupe.desktop;
@@ -20,3 +29,4 @@ text/plain=org.gnome.TextEditor.desktop;
 application/json=org.gnome.TextEditor.desktop;
 video/webm=vlc.desktop;
 application/vnd.sqlite3=libreoffice-base.desktop;
+image/jpeg=org.gnome.Loupe.desktop;

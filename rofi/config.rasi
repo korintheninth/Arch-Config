@@ -1,7 +1,7 @@
 /* ---- Configuration ---- */
 configuration {
     modi:                       "drun";
-    font:                       "Fira Sans 11";
+    font:                       "Pixel Code 10";
     show-icons:                 true;
     drun-display-format:        "{name}";
     hover-select:               false;
@@ -12,7 +12,7 @@ configuration {
 
 /* ---- Load colors ---- */
 @theme "~/.config/rofi/colors.rasi"
-
+@import "~/.config/rofi/vars.rasi"
 /* ---- Window ---- */
 window {
     width:                       25em;        /* Compact width to match */
@@ -23,7 +23,7 @@ window {
     
     border:                      2px;
     border-color:                @primary;
-    border-radius:               10px;        /* Rounded corners */
+    border-radius:               var(menu-radius);
     
     background-color:            @background;
     spacing:                     0;
@@ -48,7 +48,7 @@ inputbar {
     padding:                     8px;
     margin:                      0;
     children:                    [ "textbox-prompt-colon", "entry" ];
-    border-radius:               8px;
+    border-radius:               var(input-radius);
     background-color:            @surface;
 }
 
@@ -99,13 +99,13 @@ element {
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @on-surface;
-    border-radius:               6px;
+    border-radius:               var(element-radius);
 }
 
 element selected.normal {
     background-color:            @primary;
     text-color:                  @background; /* Contrast text */
-    border-radius:               6px;
+    border-radius:               var(element-radius);
 }
 
 element normal.normal {
