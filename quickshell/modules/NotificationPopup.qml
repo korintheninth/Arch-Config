@@ -32,8 +32,23 @@ Scope {
         if (t === 0)
             return -1
         if (t < 0)
-            return 7000
+            return 5000
         return t * 1000
+    }
+
+    function applyNotificationItemStyles(item, dismissBtn, actionsRow, appName, summary, body) {
+        Styler.apply(item, Styles.centerMenu.notifications.item)
+        Styler.apply(dismissBtn, Styles.centerMenu.notifications.item.dismiss)
+        Styler.apply(appName, Styles.centerMenu.notifications.item.appName)
+        Styler.apply(summary, Styles.centerMenu.notifications.item.summary)
+        Styler.apply(body, Styles.centerMenu.notifications.item.body)
+        if (actionsRow)
+            Styler.apply(actionsRow, Styles.centerMenu.notifications.item.actionsRow)
+    }
+
+    function applyNotificationActionStyles(action, actionLabel) {
+        Styler.apply(action, Styles.centerMenu.notifications.item.action)
+        Styler.apply(actionLabel, Styles.centerMenu.notifications.item.action.text)
     }
 
     PanelWindow {
@@ -56,6 +71,7 @@ Scope {
                 model: NotificationService.popups
 
                 delegate: Rectangle {
+                    id: toastItem
                     required property var modelData
                     width: notificationPopup.toastWidth
                     implicitHeight: toastBody.implicitHeight
@@ -92,8 +108,6 @@ Scope {
                             onExited: dismissBtn.hovered = false
                             onClicked: modelData.dismiss()
                         }
-
-                        Component.onCompleted: Styler.apply(dismissBtn, Styles.centerMenu.notifications.item.dismiss)
                     }
 
                     Column {
@@ -107,23 +121,23 @@ Scope {
                         spacing: 2
 
                         BetterText {
+                            id: toastAppName
                             width: parent.width
                             text: modelData.appName || "Unknown"
                             elide: Text.ElideRight
-                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.appName)
                         }
                         BetterText {
+                            id: toastSummary
                             width: parent.width
                             text: modelData.summary
                             elide: Text.ElideRight
-                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.summary)
                         }
                         BetterText {
+                            id: toastBodyText
                             width: parent.width
                             text: notificationPopup.truncate(modelData.body, 120)
                             elide: Text.ElideRight
                             visible: modelData.body.length > 0
-                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.body)
                         }
 
                         Row {
@@ -131,12 +145,11 @@ Scope {
                             width: parent.width
                             visible: modelData.actions.length > 0
 
-                            Component.onCompleted: Styler.apply(actionsRow, Styles.centerMenu.notifications.item.actionsRow)
-
                             Repeater {
                                 model: modelData.actions
 
                                 delegate: Rectangle {
+                                    id: toastAction
                                     required property var modelData
                                     property bool hovered: false
                                     property color normalColor: "transparent"
@@ -152,8 +165,6 @@ Scope {
                                         property color normalColor: "transparent"
                                         property color hoverColor: "transparent"
                                         color: parent.hovered ? hoverColor : normalColor
-
-                                        Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.action.text)
                                     }
 
                                     MouseArea {
@@ -165,7 +176,8 @@ Scope {
                                         onClicked: parent.modelData.invoke()
                                     }
 
-                                    Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.action)
+                                    Component.onCompleted: notificationPopup.applyNotificationActionStyles(
+                                        toastAction, actionLabel)
                                 }
                             }
                         }
@@ -181,7 +193,7 @@ Scope {
                         running: notificationPopup.popupTimeoutMs(modelData) > 0
                         interval: Math.max(notificationPopup.popupTimeoutMs(modelData), 1)
                         repeat: false
-                        onTriggered: modelData.expire()
+                        onTriggered: NotificationService.hidePopup(modelData)
                     }
 
                     Connections {
@@ -191,7 +203,9 @@ Scope {
                         }
                     }
 
-                    Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item)
+                    Component.onCompleted: notificationPopup.applyNotificationItemStyles(
+                        toastItem, dismissBtn, actionsRow,
+                        toastAppName, toastSummary, toastBodyText)
                 }
             }
         }

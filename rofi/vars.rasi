@@ -2,4 +2,8 @@
     menu-radius: 0px;
     element-radius: 0px;
     input-radius: 0px;
+    background: @color1;
+    primary: @color6;
+    surface: @color1;
+    on-surface: @color6;
 }

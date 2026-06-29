@@ -11,7 +11,10 @@ Rectangle {
 
     property alias text: clock_display
     
-    Component.onCompleted: Styler.apply(clockWidget, Styles.clock)
+    Component.onCompleted: {
+        Styler.apply(clockWidget, Styles.clock)
+        Styler.apply(clock_display, Styles.clock.text)
+    }
     
     SystemClock {
         id: clock

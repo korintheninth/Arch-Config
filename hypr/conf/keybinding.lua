@@ -19,9 +19,9 @@ hl.bind(var_mainMod .. " + CTRL + E", hl.dsp.exec_cmd("rofi -modi emoji -show em
 hl.bind(var_mainMod .. " + CTRL + C", hl.dsp.exec_cmd("gnome-calculator"))
 
 -- Display
-hl.bind(var_mainMod .. " + SHIFT + code:60", hl.dsp.exec_cmd('hyprctl keyword cursor:zoom_factor $(awk "BEGIN {print $(hyprctl getoption cursor:zoom_factor | grep \'float:\' | awk \'{print $2}\') + 0.5}")'))
-hl.bind(var_mainMod .. " + SHIFT + code:59", hl.dsp.exec_cmd('hyprctl keyword cursor:zoom_factor $(awk "BEGIN {print $(hyprctl getoption cursor:zoom_factor | grep \'float:\' | awk \'{print $2}\') - 0.5}")'))
-hl.bind(var_mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd("hyprctl keyword cursor:zoom_factor 1"))
+hl.bind(var_mainMod .. " + SHIFT + code:60",hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/zoom.sh +"))
+hl.bind(var_mainMod .. " + SHIFT + code:59",hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/zoom.sh -"))
+hl.bind(var_mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd("hyprctl eval 'hl.config({ cursor = { zoom_factor = 1.0 } })'"))
 
 -- Windows
 hl.bind(var_mainMod .. " + Q", hl.dsp.window.close())
@@ -50,7 +50,7 @@ hl.bind(var_mainMod .. " + ALT + SHIFT + H", hl.dsp.window.move({ direction = "l
 hl.bind(var_mainMod .. " + ALT + SHIFT + L", hl.dsp.window.move({ direction = "right" }))
 hl.bind(var_mainMod .. " + ALT + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
 hl.bind(var_mainMod .. " + ALT + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
-hl.bind(var_mainMod .. " + G", hl.dsp.group.toggle())
+hl.bind(var_mainMod .. " + G", hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/internetsearch.sh"))
 hl.bind(var_mainMod .. " + P", hl.dsp.exec_cmd("hyprpicker -a -f hex"))
 hl.bind(var_mainMod .. " + ALT + H", hl.dsp.window.swap({ direction = "left" }))
 hl.bind(var_mainMod .. " + ALT + L", hl.dsp.window.swap({ direction = "right" }))
@@ -65,9 +65,10 @@ hl.bind("ALT + Tab", hl.dsp.window.bring_to_top(), {
 
 -- Actions
 hl.bind(var_mainMod .. " + CTRL + R", hl.dsp.exec_cmd("hyprctl reload"))
-hl.bind(var_mainMod .. " + PRINT", hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/screenshot.sh"))
 hl.bind(var_mainMod .. " + ALT + F", hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/screenshot.sh --instant"))
 hl.bind(var_mainMod .. " + ALT + S", hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/screenshot.sh --instant-area"))
+hl.bind(var_mainMod .. " + D", hl.dsp.exec_cmd("gromit-mpx --toggle"))
+hl.bind(var_mainMod .. " + ALT + D", hl.dsp.exec_cmd("gromit-mpx --clear"))
 hl.bind(var_mainMod .. " + Escape", hl.dsp.exec_cmd(var_HYPRSCRIPTS .. "/powermenu.sh"))
 hl.bind(var_mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("waypaper --random"))
 hl.bind(var_mainMod .. " + CTRL + W", hl.dsp.exec_cmd("waypaper"))

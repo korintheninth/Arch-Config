@@ -52,14 +52,48 @@ PopupWindow {
         return s.normal
     }
 
-    Component.onCompleted: Styler.apply(centerMenu, Styles.centerMenu)
+    function applyCalendarDayOfWeekStyle(target) {
+        Styler.apply(target, Styles.centerMenu.calendar.dayOfWeek)
+    }
+
+    function applyCalendarDayStyle(target) {
+        Styler.apply(target, Styles.centerMenu.calendar.text)
+    }
+
+    function applyNotificationItemStyles(item, dismissBtn, actionsRow, appName, summary, body) {
+        Styler.apply(item, Styles.centerMenu.notifications.item)
+        Styler.apply(dismissBtn, Styles.centerMenu.notifications.item.dismiss)
+        Styler.apply(appName, Styles.centerMenu.notifications.item.appName)
+        Styler.apply(summary, Styles.centerMenu.notifications.item.summary)
+        Styler.apply(body, Styles.centerMenu.notifications.item.body)
+        if (actionsRow)
+            Styler.apply(actionsRow, Styles.centerMenu.notifications.item.actionsRow)
+    }
+
+    function applyNotificationActionStyles(action, actionLabel) {
+        Styler.apply(action, Styles.centerMenu.notifications.item.action)
+        Styler.apply(actionLabel, Styles.centerMenu.notifications.item.action.text)
+    }
+
+    Component.onCompleted: {
+        Styler.apply(centerMenu, Styles.centerMenu)
+        Styler.apply(content, Styles.centerMenu.background)
+        Styler.apply(calendar, Styles.centerMenu.calendar)
+        Styler.apply(prevMonthLabel, Styles.centerMenu.calendar.text)
+        Styler.apply(dateLabel, Styles.centerMenu.calendar.text)
+        Styler.apply(nextMonthLabel, Styles.centerMenu.calendar.text)
+        Styler.apply(middlePanel, Styles.centerMenu.placeholder)
+        Styler.apply(middleHeaderTitle, Styles.centerMenu.notifications.header.text)
+        Styler.apply(middleToggleBtn, Styles.centerMenu.notifications.header.clear)
+        Styler.apply(notifications, Styles.centerMenu.notifications)
+        Styler.apply(notifTitle, Styles.centerMenu.notifications.header.text)
+        Styler.apply(notifEmptyLabel, Styles.centerMenu.notifications.empty)
+    }
 
     Rectangle {
         id: content
         width: Styles.centerMenu.panelWidth * 3
         height: Styles.centerMenu.panelHeight
-
-        Component.onCompleted: Styler.apply(content, Styles.centerMenu.background)
 
         transform: Rotation {
             id: xAxisRotation
@@ -114,8 +148,6 @@ PopupWindow {
                 property int month: new Date().getMonth()
                 property date selectedDate: new Date()
 
-                Component.onCompleted: Styler.apply(calendar, Styles.centerMenu.calendar)
-
                 Column {
                     id: col
                     anchors.fill: parent
@@ -134,12 +166,12 @@ PopupWindow {
                             color: hovered ? Styles.centerMenu.calendar.navButton.hoverColor : "transparent"
 
                             BetterText {
+                                id: prevMonthLabel
                                 anchors.centerIn: parent
                                 text: "‹"
                                 color: parent.hovered
                                     ? Styles.centerMenu.calendar.navButton.hoverTextColor
                                     : Styles.centerMenu.calendar.navButton.color
-                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.calendar.text)
                             }
 
                             MouseArea {
@@ -165,7 +197,6 @@ PopupWindow {
                             horizontalAlignment: Text.AlignHCenter
                             width: parent.width - 2 * calendar.buttonWidth - 2 * controlRow.spacing
                             text: Qt.formatDate(new Date(calendar.year, calendar.month, 1), "MMMM yyyy")
-                            Component.onCompleted: Styler.apply(dateLabel, Styles.centerMenu.calendar.text)
                         }
 
                         Rectangle {
@@ -175,12 +206,12 @@ PopupWindow {
                             color: hovered ? Styles.centerMenu.calendar.navButton.hoverColor : "transparent"
 
                             BetterText {
+                                id: nextMonthLabel
                                 anchors.centerIn: parent
                                 text: "›"
                                 color: parent.hovered
                                     ? Styles.centerMenu.calendar.navButton.hoverTextColor
                                     : Styles.centerMenu.calendar.navButton.color
-                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.calendar.text)
                             }
 
                             MouseArea {
@@ -212,7 +243,7 @@ PopupWindow {
                             text: shortName
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.calendar.dayOfWeek)
+                            Component.onCompleted: centerMenu.applyCalendarDayOfWeekStyle(this)
                         }
                     }
 
@@ -267,11 +298,12 @@ PopupWindow {
                                     : parent.taskPriority >= 3
                                         ? Styles.centerMenu.calendar.taskDueTextColor
                                         : Styles.centerMenu.calendar.text.color
-                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.calendar.text)
+                                Component.onCompleted: centerMenu.applyCalendarDayStyle(this)
                             }
 
                             MouseArea {
                                 anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
                                 onClicked: grid.clicked(model.date)
                             }
                         }
@@ -284,27 +316,57 @@ PopupWindow {
                 width: content.width / 3
                 height: parent.height
 
-                Component.onCompleted: Styler.apply(middlePanel, Styles.centerMenu.placeholder)
+                property bool showPrayerTimes: false
 
                 Column {
-                    id: todoistColumn
+                    id: middleColumn
                     anchors.fill: parent
                     anchors.margins: 8
                     spacing: 6
 
-                    BetterText {
-                        id: todoistHeader
+                    Row {
+                        id: middleHeaderRow
                         width: parent.width
-                        text: Qt.formatDate(calendar.selectedDate, "dddd MMM d")
-                        Component.onCompleted: Styler.apply(todoistHeader, Styles.centerMenu.notifications.header.text)
+                        spacing: (parent.width - middleHeaderTitle.width)/2 - middleToggleBtn.paintedWidth
+                        leftPadding: (parent.width - middleHeaderTitle.width)/2
+
+                        BetterText {
+                            id: middleHeaderTitle
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: middlePanel.showPrayerTimes
+                                ? "Prayer Times"
+                                : Qt.formatDate(calendar.selectedDate, "dddd MMM d")
+                        }
+
+                        BetterText {
+                            id: middleToggleBtn
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: middlePanel.showPrayerTimes ? "Tasks" : "Prayer"
+                            property bool hovered: false
+                            color: hovered
+                                ? Styles.centerMenu.notifications.header.clear.hoverTextColor
+                                : Styles.centerMenu.notifications.header.clear.color
+                            font.family: Styles.fontFamily
+                            font.pixelSize: Styles.pixelSize
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onEntered: middleToggleBtn.hovered = true
+                                onExited: middleToggleBtn.hovered = false
+                                onClicked: middlePanel.showPrayerTimes = !middlePanel.showPrayerTimes
+                            }
+                        }
                     }
 
                     Item {
                         width: parent.width
-                        height: parent.height - todoistHeader.height - todoistColumn.spacing
+                        height: parent.height - middleHeaderRow.height - middleColumn.spacing
 
                         Flickable {
                             anchors.fill: parent
+                            visible: !middlePanel.showPrayerTimes
                             contentHeight: todoistTasks.implicitHeight
                             clip: true
 
@@ -316,6 +378,18 @@ PopupWindow {
                                 date: calendar.selectedDate
                             }
                         }
+
+                        Flickable {
+                            anchors.fill: parent
+                            visible: middlePanel.showPrayerTimes
+                            contentHeight: prayerTimesPanel.implicitHeight
+                            clip: true
+
+                            PrayerTimes {
+                                id: prayerTimesPanel
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                        }
                     }
                 }
             }
@@ -324,8 +398,6 @@ PopupWindow {
                 id: notifications
                 width: content.width / 3
                 height: parent.height
-
-                Component.onCompleted: Styler.apply(notifications, Styles.centerMenu.notifications)
 
                 Column {
                     id: notifColumn
@@ -342,7 +414,6 @@ PopupWindow {
                             id: notifTitle
                             text: "Notifications"
                             anchors.verticalCenter: parent.verticalCenter
-                            Component.onCompleted: Styler.apply(notifTitle, Styles.centerMenu.notifications.header.text)
                         }
 
                         BetterText {
@@ -377,10 +448,10 @@ PopupWindow {
                         clip: true
 
                         BetterText {
+                            id: notifEmptyLabel
                             anchors.centerIn: parent
                             visible: NotificationService.count === 0
                             text: "No notifications"
-                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.empty)
                         }
 
                         Flickable {
@@ -398,6 +469,7 @@ PopupWindow {
                                     model: NotificationService.list
 
                                     delegate: Rectangle {
+                                        id: notifItem
                                         required property var modelData
                                         width: notifItems.width
                                         height: implicitHeight
@@ -435,8 +507,6 @@ PopupWindow {
                                                 onExited: dismissBtn.hovered = false
                                                 onClicked: modelData.dismiss()
                                             }
-
-                                            Component.onCompleted: Styler.apply(dismissBtn, Styles.centerMenu.notifications.item.dismiss)
                                         }
 
                                         Column {
@@ -450,23 +520,23 @@ PopupWindow {
                                             spacing: 2
 
                                             BetterText {
+                                                id: notifAppName
                                                 width: parent.width
                                                 text: modelData.appName || "Unknown"
                                                 elide: Text.ElideRight
-                                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.appName)
                                             }
                                             BetterText {
+                                                id: notifSummary
                                                 width: parent.width
                                                 text: modelData.summary
                                                 elide: Text.ElideRight
-                                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.summary)
                                             }
                                             BetterText {
+                                                id: notifBodyText
                                                 width: parent.width
                                                 text: centerMenu.truncate(modelData.body, 80)
                                                 elide: Text.ElideRight
                                                 visible: modelData.body.length > 0
-                                                Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.body)
                                             }
 
                                             Row {
@@ -474,12 +544,11 @@ PopupWindow {
                                                 width: parent.width
                                                 visible: modelData.actions.length > 0
 
-                                                Component.onCompleted: Styler.apply(actionsRow, Styles.centerMenu.notifications.item.actionsRow)
-
                                                 Repeater {
                                                     model: modelData.actions
 
                                                     delegate: Rectangle {
+                                                        id: actionItem
                                                         required property var modelData
                                                         property bool hovered: false
                                                         property color normalColor: "transparent"
@@ -495,8 +564,6 @@ PopupWindow {
                                                             property color normalColor: "transparent"
                                                             property color hoverColor: "transparent"
                                                             color: parent.hovered ? hoverColor : normalColor
-
-                                                            Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.action.text)
                                                         }
 
                                                         MouseArea {
@@ -508,13 +575,16 @@ PopupWindow {
                                                             onClicked: parent.modelData.invoke()
                                                         }
 
-                                                        Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item.action)
+                                                        Component.onCompleted: centerMenu.applyNotificationActionStyles(
+                                                            actionItem, actionLabel)
                                                     }
                                                 }
                                             }
                                         }
 
-                                        Component.onCompleted: Styler.apply(this, Styles.centerMenu.notifications.item)
+                                        Component.onCompleted: centerMenu.applyNotificationItemStyles(
+                                            notifItem, dismissBtn, actionsRow,
+                                            notifAppName, notifSummary, notifBodyText)
                                     }
                                 }
                             }

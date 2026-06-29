@@ -5,6 +5,7 @@ import QtQuick.Controls
 import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import "../components"
+import "../services"
 import "../themes"
 import "../themes/StyleEngine.js" as Styler
 
@@ -26,6 +27,33 @@ Variants {
                 right: true
             }
 
+            Component.onCompleted: {
+                Styler.apply(tasksRegion, Styles.wallpaper.tasks)
+                Styler.apply(tasksHeader, Styles.wallpaper.tasks.header)
+                Styler.apply(todoistTasks.anchors, Styles.wallpaper.tasks.todoist.anchors)
+                Styler.apply(clockWidget, Styles.wallpaper.clock)
+                Styler.apply(clockHour, Styles.wallpaper.clock.text)
+                Styler.apply(dot, Styles.wallpaper.clock.text)
+                Styler.apply(clockMinute, Styles.wallpaper.clock.text)
+                Styler.apply(mediaControl, Styles.wallpaper.media)
+                Styler.apply(wallpaperCava, Styles.wallpaper.media.cava)
+                Styler.apply(wallpaperTitle, Styles.wallpaper.media.text)
+                Styler.apply(wallpaperArtist, Styles.wallpaper.media.text)
+                Styler.apply(lyrics, Styles.wallpaper.lyrics)
+                Styler.apply(lyrics.lr1, Styles.wallpaper.lyrics.text)
+                Styler.apply(lyrics.lr2, Styles.wallpaper.lyrics.text)
+                Styler.apply(lyrics.lr3, Styles.wallpaper.lyrics.text)
+                Styler.apply(lyrics.lr4, Styles.wallpaper.lyrics.text)
+                Styler.apply(lyrics.lr1, { color: Styles.wallpaper.lyrics.inactiveColor })
+                Styler.apply(lyrics.lr3, { color: Styles.wallpaper.lyrics.inactiveColor })
+                Styler.apply(lyrics.lr4, { color: Styles.wallpaper.lyrics.inactiveColor })
+                Styler.apply(seekSlider, Styles.wallpaper.media.slider)
+                Styler.apply(seekSlider, Styles.wallpaper.media.seekSlider)
+                Styler.apply(prevBtn, Styles.wallpaper.media.button)
+                Styler.apply(playBtn, Styles.wallpaper.media.button)
+                Styler.apply(nextBtn, Styles.wallpaper.media.button)
+            }
+
             aboveWindows: false 
             WlrLayershell.layer: WlrLayer.Bottom 
             
@@ -37,19 +65,18 @@ Variants {
             }
             Rectangle {
                 id: tasksRegion
-                width: todoistTasks.width + 50
-                height: todoistTasks.height + 80
+                property int widthPadding: 20
+                property int heightPadding: 80
+                width: todoistTasks.width + widthPadding
+                height: todoistTasks.height + heightPadding
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.topMargin: 100
-                anchors.leftMargin: 100
-                color: Qt.rgba(Styles.bgBase.r, Styles.bgBase.g, Styles.bgBase.b, 0.02)
+                anchors.topMargin: 50
+                anchors.leftMargin: 50
                 radius: 10
                 BetterText {
+                    id: tasksHeader
                     text: "Today's Tasks:"
-                    font.family: "Silkscreen"
-                    font.pixelSize: 20
-                    color: Styles.fgBase
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.topMargin: 20
@@ -58,79 +85,39 @@ Variants {
                 Todoist {
                     id: todoistTasks
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: 25
-                    styleOverride: {
-                        "rowSpacing": 20,
-                        "taskMaxWidth": 320,
-                        "task": {
-                            "text": {
-                                "font": {
-                                    "pixelSize": 20,
-                                    "family": "Silkscreen",
-                                },
-                            },
-                            "due": {
-                                "font": {
-                                },
-                            },
-                            "check": {
-                                "font": {
-                                    "pixelSize": 20
-                                },
-                            }
-                        },
-                        "empty": {
-                            "text": {
-                                "font": {
-                                },
-                            }
-                        },
-                        "error": {
-                            "text": {
-                                "font": {
-                                },
-                                "color": "#e54545"
-                            }
-                        },
-                    }
+                    styleOverride: Styles.wallpaper.tasks.todoist.styleOverride
                     date: Date.today
                 }
             }
             
             Rectangle {
                 id: clockWidget
-                
+                color: "transparent"
+                radius: 0
                 anchors.centerIn: mediaControl
-
-                property var clock: ({
-                    "color": "transparent",
-                    "radius": 0,
-                    "text": {
-                        "font": {
-                            "family": "Silkscreen",
-                            "pixelSize": 200,
-                            "bold": false
-                        },
-                        "color": Styles.fgBase
-                    }
-                })
-                
-                property alias text: clock_display
-                
-                Component.onCompleted: Styler.apply(clockWidget, clockWidget.clock)
                 
                 SystemClock {
                     id: clock
                     precision: SystemClock.Minutes
                 }
-
+        
                 BetterText {
-                    id: clock_display
-                    text: Qt.formatDateTime(clock.date, "hh:mm")
-                    anchors.centerIn: parent
+                    id: clockHour
+                    anchors.right: dot.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Qt.formatDateTime(clock.date, "hh")
                 }
-
-                implicitWidth: clock_display.paintedWidth + 20
+                BetterText {
+                    id: dot
+                    anchors.centerIn: parent
+                    text: ":"
+                }
+                BetterText {
+                    id: clockMinute
+                    anchors.left: dot.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Qt.formatDateTime(clock.date, "mm")
+                }
 
             }
 
@@ -139,13 +126,14 @@ Variants {
                 color: "transparent"
                 width: 800
                 height: 300
+                property int controlsSpacing: 20
+                property int controlsBottomOffset: 35
+                property int titleMaxLength: 75
+                property int artistMaxLength: 75
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
                 anchors.bottomMargin: 60
-                anchors.rightMargin: 100
-                property color cavaColor: "transparent"
-                property int controlsSpacing: 20
-                property int controlsBottomOffset: 35
+                anchors.rightMargin: 60
                 
                 function truncate(str, max) {
                     if (!str || max <= 0) return str ?? ""
@@ -156,7 +144,8 @@ Variants {
                     const entry = (p?.desktopEntry ?? "").toLowerCase()
                     const identity = (p?.identity ?? "").toLowerCase()
                     return p && (entry === "spotify"
-                        || identity.includes("youtube_music"))
+                    || identity.includes("youtube-music")
+                    || identity.includes("mixtapes"))
                 }
 
                 property MprisPlayer player: {
@@ -168,16 +157,12 @@ Variants {
                     return null
                 }
 
-                Component.onCompleted: {
-                    if (typeof Styles !== "undefined" && Styles.mediaMenu)
-                        Styler.apply(mediaControl, Styles.mediaMenu)
-                }
-
                 Cava {
+                    id: wallpaperCava
                     override: true
                     anchors.fill: parent
-                    barWidth: (mediaControl.width - 69) / 70
-                    bars.spacing: 1
+                    property int barCount: 70
+                    barWidth: (mediaControl.width - (barCount - 1)) / barCount
                     confPath: "wallpaper.conf"
                     barColor: Qt.rgba(Styles.bgSecondary.r, Styles.bgSecondary.g, Styles.bgSecondary.b, 0.6)
                     visible: mediaControl.player && mediaControl.player.isPlaying
@@ -187,19 +172,15 @@ Variants {
                 Column {
                     anchors.top: parent.bottom
                     BetterText {
-                        id: title
-                        text: mediaControl.player ? mediaControl.truncate(mediaControl.player.trackTitle, 60) : ""
-
-                        Component.onCompleted: Styler.apply(title, Styles.mediaMenu.text)
+                        id: wallpaperTitle
+                        text: mediaControl.player ? mediaControl.truncate(mediaControl.player.trackTitle, mediaControl.titleMaxLength) : ""
                     }
                     BetterText {
-                        id: artist
-                        text: mediaControl.truncate(mediaControl.player?.trackArtist + " - " + mediaControl.player?.trackAlbum, 60)
-
-                        Component.onCompleted: Styler.apply(artist, Styles.mediaMenu.text)
+                        id: wallpaperArtist
+                        text: mediaControl.truncate(mediaControl.player?.trackArtist + " - " + mediaControl.player?.trackAlbum, mediaControl.artistMaxLength)
                     }
                 }
-
+                
                 Timer {
                     interval: 100
                     running: mediaControl.player && mediaControl.player.isPlaying
@@ -207,6 +188,7 @@ Variants {
                     onTriggered: {
                         if (mediaControl.player) {
                             seekSlider.value = mediaControl.player.position
+                            lyrics.populateLyrics()
                         }
                     }
                 }
@@ -221,9 +203,11 @@ Variants {
                     onMoved: {
                         mediaControl.player.position = value
                     }
-                    
+
                     implicitWidth: parent.width
                     implicitHeight: 6
+
+                    property alias bar: seekBar
 
                     background: Rectangle {
                         x: seekSlider.leftPadding
@@ -238,6 +222,7 @@ Variants {
                         color: Styles.fgBase
 
                         Rectangle {
+                            id: seekBar
                             width: parent.width * seekSlider.visualPosition
                             height: parent.height
                             color: Styles.bgBase
@@ -254,7 +239,7 @@ Variants {
                         y: 0
                     }
                 }
-
+                
                 Row {
                     id: mediaButtons
                     spacing: mediaControl.controlsSpacing
@@ -270,7 +255,6 @@ Variants {
                             if (mediaControl.player)
                                 mediaControl.player.previous()
                         }
-                        Component.onCompleted: Styler.apply(prevBtn, Styles.mediaMenu.button)
                     }
                     MediaMenuButton {
                         id: playBtn
@@ -285,7 +269,6 @@ Variants {
                             else if (p.canPlay)
                                 p.play()
                         }
-                        Component.onCompleted: Styler.apply(playBtn, Styles.mediaMenu.button)
                     }
                     MediaMenuButton {
                         id: nextBtn
@@ -295,9 +278,17 @@ Variants {
                             if (mediaControl.player)
                                 mediaControl.player.next()
                         }
-                        Component.onCompleted: Styler.apply(nextBtn, Styles.mediaMenu.button)
                     }
                 }
+            }
+            Lyrics {
+                id: lyrics
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.rightMargin: 60
+                anchors.topMargin: 60
+                width: mediaControl.width
+                position: mediaControl.player ? mediaControl.player.position : 0
             }
         }
     }

@@ -78,10 +78,11 @@ PopupWindow {
     Component.onCompleted: {
         if (typeof Styles !== "undefined" && Styles.tooltip) {
             Styler.apply(tooltip, Styles.tooltip)
+            Styler.apply(backgroundRect, Styles.tooltip.background)
+            Styler.apply(label, Styles.tooltip.label)
         }
-        if (styleOverride) {
+        if (styleOverride)
             Styler.apply(tooltip, styleOverride)
-        }
     }
 
     Connections {

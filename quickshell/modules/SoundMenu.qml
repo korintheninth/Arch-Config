@@ -73,9 +73,26 @@ PopupWindow {
         objects: outputStreams.concat(inputStreams)
     }
 
+    function applyStreamSliderStyles(slider) {
+        Styler.apply(slider, Styles.soundMenu.slider)
+    }
+
+    function applyStreamLabelStyle(label) {
+        Styler.apply(label, Styles.soundMenu.section.text)
+    }
+
     Component.onCompleted: {
-        if (typeof Styles !== "undefined" && Styles.mediaMenu)
-            Styler.apply(soundMenu, Styles.soundMenu)
+        Styler.apply(soundMenu, Styles.soundMenu)
+        Styler.apply(mainVolumeLabel, Styles.soundMenu.section.text)
+        Styler.apply(defaultVolumeSlider, Styles.soundMenu.slider)
+        Styler.apply(defaultVolumeSlider, Styles.soundMenu.section.slider)
+        Styler.apply(mainVolume, Styles.soundMenu.section)
+        Styler.apply(sourcesColumn, Styles.soundMenu.section.content)
+        Styler.apply(sourcesHeader, Styles.soundMenu.section.text)
+        Styler.apply(sourcesSection, Styles.soundMenu.section)
+        Styler.apply(appsColumn, Styles.soundMenu.section.content)
+        Styler.apply(appsHeader, Styles.soundMenu.section.text)
+        Styler.apply(appsSection, Styles.soundMenu.section)
         updateStreams()
     }
 
@@ -143,7 +160,6 @@ PopupWindow {
                     anchors.left: parent.left
                     anchors.top: parent.top
                     text: "Main Volume: " + Math.round(soundMenu.defaultSink.audio.volume * 100)
-                    Component.onCompleted: Styler.apply(mainVolumeLabel, Styles.soundMenu.section.text)
                 }
 
                 Slider {
@@ -157,11 +173,6 @@ PopupWindow {
                     onMoved: soundMenu.defaultSink.audio.volume = value
 
                     property alias bar: defaultBar
-
-                    Component.onCompleted: {
-                        Styler.apply(defaultVolumeSlider, Styles.soundMenu.slider)
-                        Styler.apply(defaultVolumeSlider, Styles.soundMenu.section.slider)
-                    }
 
                     background: Rectangle {
                         x: defaultVolumeSlider.leftPadding
@@ -187,8 +198,6 @@ PopupWindow {
                         y: 0
                     }
                 }
-
-                Component.onCompleted: Styler.apply(mainVolume, Styles.soundMenu.section)
             }
 
             Rectangle {
@@ -204,14 +213,12 @@ PopupWindow {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    Component.onCompleted: Styler.apply(this, Styles.soundMenu.section.content)
                     spacing: Styles.soundMenu.section.content.spacing
 
                     BetterText {
                         id: sourcesHeader
                         width: parent.width
                         text: "Sources:"
-                        Component.onCompleted: Styler.apply(sourcesHeader, Styles.soundMenu.section.text)
                     }
 
                     Repeater {
@@ -227,7 +234,7 @@ PopupWindow {
                                 width: parent.width
                                 text: soundMenu.nodeLabel(modelData) + ": " + Math.round(parent.modelData.audio.volume * 100)
                                 elide: Text.ElideRight
-                                Component.onCompleted: Styler.apply(sourceLabel, Styles.soundMenu.section.text)
+                                Component.onCompleted: soundMenu.applyStreamLabelStyle(this)
                             }
 
                             Slider {
@@ -241,7 +248,7 @@ PopupWindow {
 
                                 property alias bar: sourceBar
 
-                                Component.onCompleted: Styler.apply(sourceSlider, Styles.soundMenu.slider)
+                                Component.onCompleted: soundMenu.applyStreamSliderStyles(this)
 
                                 background: Rectangle {
                                     x: sourceSlider.leftPadding
@@ -270,8 +277,6 @@ PopupWindow {
                         }
                     }
                 }
-
-                Component.onCompleted: Styler.apply(sourcesSection, Styles.soundMenu.section)
             }
 
             Rectangle {
@@ -287,13 +292,11 @@ PopupWindow {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    Component.onCompleted: Styler.apply(this, Styles.soundMenu.section.content)
 
                     BetterText {
                         id: appsHeader
                         width: parent.width
                         text: "Apps:"
-                        Component.onCompleted: Styler.apply(appsHeader, Styles.soundMenu.section.text)
                     }
 
                     Repeater {
@@ -309,7 +312,7 @@ PopupWindow {
                                 width: parent.width
                                 text: soundMenu.nodeLabel(modelData) + ": " + Math.round(parent.modelData.audio.volume * 100)
                                 elide: Text.ElideRight
-                                Component.onCompleted: Styler.apply(nameLabel, Styles.soundMenu.section.text)
+                                Component.onCompleted: soundMenu.applyStreamLabelStyle(this)
                             }
 
                             Slider {
@@ -323,7 +326,7 @@ PopupWindow {
 
                                 property alias bar: bar
 
-                                Component.onCompleted: Styler.apply(volumeSlider, Styles.soundMenu.slider)
+                                Component.onCompleted: soundMenu.applyStreamSliderStyles(this)
 
                                 background: Rectangle {
                                     x: volumeSlider.leftPadding
@@ -352,8 +355,6 @@ PopupWindow {
                         }
                     }
                 }
-
-                Component.onCompleted: Styler.apply(appsSection, Styles.soundMenu.section)
             }
         }
 

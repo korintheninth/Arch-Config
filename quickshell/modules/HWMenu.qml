@@ -46,9 +46,45 @@ PopupWindow {
     property double cpuTemp: 0
     property double gpuTemp: 0
     property int selectedMode: PowerProfiles.profile
+    property var cpuProcesses: []
+    property var memProcesses: []
 
+    function applyProcessRowStyles(row, nameText, pidText, usageText) {
+        Styler.apply(row, Styles.hwMenu.bars.processes.row)
+        Styler.apply(nameText, Styles.hwMenu.bars.processes.row.name)
+        Styler.apply(pidText, Styles.hwMenu.bars.processes.row.pid)
+        Styler.apply(usageText, Styles.hwMenu.bars.processes.row.usage)
+    }
 
-    Component.onCompleted: Styler.apply(hwmenu, Styles.hwMenu)
+    function applyPowerButtonStyles(label, icon) {
+        Styler.apply(label, Styles.hwMenu.powerProfiles.buttonRow.button.text)
+        Styler.apply(icon, Styles.hwMenu.powerProfiles.buttonRow.button.icon)
+    }
+
+    Component.onCompleted: {
+        Styler.apply(hwmenu, Styles.hwMenu)
+        Styler.apply(tempRow, Styles.hwMenu.temps.text)
+        Styler.apply(temps, Styles.hwMenu.temps)
+        Styler.apply(diskText, Styles.hwMenu.bars.text)
+        Styler.apply(diskBar, Styles.hwMenu.bars.bar)
+        Styler.apply(disk, Styles.hwMenu.bars)
+        Styler.apply(gpuText, Styles.hwMenu.bars.text)
+        Styler.apply(gpuBar, Styles.hwMenu.bars.bar)
+        Styler.apply(gpu, Styles.hwMenu.bars)
+        Styler.apply(cpuText, Styles.hwMenu.bars.text)
+        Styler.apply(cpuBar, Styles.hwMenu.bars.bar)
+        Styler.apply(cpuProcessList, Styles.hwMenu.bars.processes.list)
+        Styler.apply(cpu, Styles.hwMenu.bars)
+        cpu.height = Styles.hwMenu.bars.withProcessesHeight
+        Styler.apply(memText, Styles.hwMenu.bars.text)
+        Styler.apply(memBar, Styles.hwMenu.bars.bar)
+        Styler.apply(memProcessList, Styles.hwMenu.bars.processes.list)
+        Styler.apply(mem, Styles.hwMenu.bars)
+        mem.height = Styles.hwMenu.bars.withProcessesHeight
+        Styler.apply(powerProfiles, Styles.hwMenu.powerProfiles)
+        Styler.apply(powerLabel, Styles.hwMenu.powerProfiles.text)
+        Styler.apply(buttonRow, Styles.hwMenu.powerProfiles.buttonRow)
+    }
 
     Process {
         id: fetch_cpu_temp
@@ -63,14 +99,41 @@ PopupWindow {
         }
     }
 
+    Process {
+        id: fetch_top_processes
+
+        running: true
+        command: [
+            "python",
+            Quickshell.shellPath("Scripts/systemusage.py")
+        ]
+        
+        function parseLine(line) {
+            var parts = line.split(" ")
+            return {
+                name: parts[0],
+                pid: parseInt(parts[1]),
+                usage: parseFloat(parts[2])
+            }
+        }
+        
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var lines = text.trim().split("\n")
+                hwmenu.cpuProcesses = lines.slice(0, 3).map(fetch_top_processes.parseLine)
+                hwmenu.memProcesses = lines.slice(3, 6).map(fetch_top_processes.parseLine)
+            }
+        }
+    }
 
     Timer {
         id: timer
-        interval: 5000
+        interval: 2000
         running: true
         repeat: true
         onTriggered: {
             fetch_cpu_temp.running = true
+            fetch_top_processes.running = true
         }
     }
 
@@ -141,7 +204,6 @@ PopupWindow {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     spacing: 0
-                    Component.onCompleted: Styler.apply(tempRow, Styles.hwMenu.temps.text)
 
                     BetterText {
                         text: "Temps: CPU: "
@@ -160,7 +222,6 @@ PopupWindow {
                         color: temps.tempColor(hwmenu.gpuTemp)
                     }
                 }
-                Component.onCompleted: Styler.apply(temps, Styles.hwMenu.temps)
             }
             Rectangle {
                 id: disk
@@ -171,7 +232,6 @@ PopupWindow {
                     text: "Disk Usage:"
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    Component.onCompleted: Styler.apply(diskText, Styles.hwMenu.bars.text)
                 }
                 HorizontalStatusBar {
                     id: diskBar
@@ -181,10 +241,7 @@ PopupWindow {
                     text: hwmenu.diskUsage
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
-                    Component.onCompleted: Styler.apply(diskBar, Styles.hwMenu.bars.bar)
                 }
-
-                Component.onCompleted: Styler.apply(disk, Styles.hwMenu.bars)
 
                 MouseArea {
                     anchors.fill: parent
@@ -207,7 +264,6 @@ PopupWindow {
                     text: "GPU Usage:"
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    Component.onCompleted: Styler.apply(gpuText, Styles.hwMenu.bars.text)
                 }
                 HorizontalStatusBar {
                     id: gpuBar
@@ -217,20 +273,18 @@ PopupWindow {
                     text: hwmenu.gpuUsage
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
-                    Component.onCompleted: Styler.apply(gpuBar, Styles.hwMenu.bars.bar)
                 }
-                Component.onCompleted: Styler.apply(gpu, Styles.hwMenu.bars)
             }
             Rectangle {
                 id: cpu
-                height: 60
+                height: Styles.hwMenu.bars.withProcessesHeight
+
                 width: 350
                 BetterText {
                     id: cpuText
                     text: "CPU Usage:"
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    Component.onCompleted: Styler.apply(cpuText, Styles.hwMenu.bars.text)
                 }
                 HorizontalStatusBar {
                     id: cpuBar
@@ -238,22 +292,57 @@ PopupWindow {
                     width: 300
                     val: hwmenu.cpuUsage
                     text: hwmenu.cpuUsage
-                    anchors.bottom: parent.bottom
+                    anchors.top: cpuText.bottom
                     anchors.left: parent.left
-                    Component.onCompleted: Styler.apply(cpuBar, Styles.hwMenu.bars.bar)
                 }
-                Component.onCompleted: Styler.apply(cpu, Styles.hwMenu.bars)
+                Column {
+                    id: cpuProcessList
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: cpuBar.bottom
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    Repeater {
+                        model: hwmenu.cpuProcesses
+                        delegate: Item {
+                            id: cpuProcessRow
+                            width: cpuProcessList.width
+                            BetterText {
+                                id: cpuProcessName
+                                text: modelData.name
+                                width: parent.width * 0.4
+                                elide: Text.ElideRight
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            BetterText {
+                                id: cpuProcessPid
+                                text: modelData.pid
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            BetterText {
+                                id: cpuProcessUsage
+                                text: modelData.usage + "%"
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Component.onCompleted: hwmenu.applyProcessRowStyles(
+                                cpuProcessRow, cpuProcessName, cpuProcessPid, cpuProcessUsage)
+                        }
+                    }
+                }
             }
             Rectangle {
                 id: mem
-                height: 60
+                height: Styles.hwMenu.bars.withProcessesHeight
                 width: 350
                 BetterText {
                     id: memText
                     text: "Memory Usage:"
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    Component.onCompleted: Styler.apply(memText, Styles.hwMenu.bars.text)
                 }
                 HorizontalStatusBar {
                     id: memBar
@@ -261,24 +350,57 @@ PopupWindow {
                     width: 300
                     val: hwmenu.memUsage
                     text: hwmenu.memUsage
-                    anchors.bottom: parent.bottom
+                    anchors.top: memText.bottom
                     anchors.left: parent.left
-                    Component.onCompleted: Styler.apply(memBar, Styles.hwMenu.bars.bar)
                 }
-                Component.onCompleted: Styler.apply(mem, Styles.hwMenu.bars)
+                Column {
+                    id: memProcessList
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: memBar.bottom
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    Repeater {
+                        model: hwmenu.memProcesses
+                        delegate: Item {
+                            id: memProcessRow
+                            width: memProcessList.width
+                            BetterText {
+                                id: memProcessName
+                                text: modelData.name
+                                width: parent.width * 0.4
+                                elide: Text.ElideRight
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            BetterText {
+                                id: memProcessPid
+                                text: modelData.pid
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            BetterText {
+                                id: memProcessUsage
+                                text: Math.round(modelData.usage) + " MB"
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Component.onCompleted: hwmenu.applyProcessRowStyles(
+                                memProcessRow, memProcessName, memProcessPid, memProcessUsage)
+                        }
+                    }
+                }
             }
             Rectangle {
                 id: powerProfiles
                 height: 60
                 width: 350
-                Component.onCompleted: Styler.apply(powerProfiles, Styles.hwMenu.powerProfiles)
                 BetterText {
                     id: powerLabel
                     text: "Power Mode:"
                     anchors.top: parent.top
                     anchors.left: parent.left
-
-                    Component.onCompleted: Styler.apply(powerLabel, Styles.hwMenu.powerProfiles.text)
                 }
                 Row {
                     id: buttonRow
@@ -291,7 +413,6 @@ PopupWindow {
                     spacing: gap
                     leftPadding: gap
                     rightPadding: gap
-                    Component.onCompleted: Styler.apply(buttonRow, Styles.hwMenu.powerProfiles.buttonRow)
                     Repeater {
                         model: ["Eco", "Balanced", "Power"]
                         delegate: Button {
@@ -306,7 +427,6 @@ PopupWindow {
                                 text: buttonRow.icons[index]
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
-                                Component.onCompleted: Styler.apply(label, Styles.hwMenu.powerProfiles.buttonRow.button.text)
                             }
                             background: Rectangle {
                                 id: icon
@@ -314,8 +434,9 @@ PopupWindow {
                                 property color normalColor: "white"
                                 color: checked ? checkedColor : normalColor
                                 anchors.fill: parent
-                                Component.onCompleted: Styler.apply(icon, Styles.hwMenu.powerProfiles.buttonRow.button.icon)
                             }
+
+                            Component.onCompleted: hwmenu.applyPowerButtonStyles(label, icon)
                         }
                     }
                 }

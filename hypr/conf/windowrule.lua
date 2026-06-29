@@ -1,44 +1,91 @@
--- -----------------------------------------------------
+-- Pavucontrol float oning
+hl.window_rule({
+    match = {
+        class = "(.*org.pulseaudio.pavucontrol.*)",
+    },
+    float = true,
+    size = "700 600",
+    center = true,
+})
 
--- Window rules
+-- Waypaper
+hl.window_rule({
+    match = {
+        class = "(.*waypaper.*)",
+    },
+    float = true,
+    size = "1800 1000",
+    center = true,
+})
 
--- -----------------------------------------------------
+-- General floating
 hl.window_rule({
     match = {
-        title = "^(pavucontrol)$",
+        class = "(dotfiles-floating)",
     },
     float = true,
+    size = "1000 700",
+    center = true,
 })
+
+-- General floating
 hl.window_rule({
     match = {
-        title = "^(blueman-manager)$",
+        class = "(floating)",
     },
     float = true,
+    center = true,
 })
+
+-- Blueman Manager
 hl.window_rule({
     match = {
-        title = "^(nm-connection-editor)$",
+        class = "(blueman-manager)",
     },
     float = true,
+    size = "800 600",
+    center = true,
 })
+
+-- Gnome Calculator
 hl.window_rule({
     match = {
-        title = "^(qalculate-gtk)$",
+        class = "(org.gnome.Calculator)",
     },
     float = true,
+    center = true,
+    size = "700 600",
 })
+
+-- Hyprland Share Picker
 hl.window_rule({
     match = {
-        class = "org.gnome.baobab",
+        class = "(hyprland-share-picker)",
     },
     float = true,
+    pin = true,
+    center = true,
+    size = "600 400",
 })
+
+-- float on and center on file pickers
+hl.window_rule({
+    match = {
+        class = "xdg-desktop-portal-gtk",
+        title = "^(Open.*Files?|Save.*Files?|All Files|Save)",
+    },
+    float = true,
+    center = true,
+    float = true,
+})
+
 hl.window_rule({
     match = {
         class = "paradox-launcher-v2",
     },
     float = true,
 })
+
 hl.window_rule({
     match = {
         class = "^(steam)$",
@@ -59,11 +106,6 @@ hl.window_rule({
         title = "^(Picture-in-Picture)$",
     },
     pin = true,
-})
-hl.window_rule({
-    match = {
-        title = "^(Picture-in-Picture)$",
-    },
     move = "69.5% 4%",
 })
 
@@ -81,39 +123,36 @@ hl.window_rule({
     },
     render_unfocused = true,
 })
+
 hl.window_rule({
     match = {
-        class = "^(com.github.th_ch.youtube_music)$",
+        class = "^(com.github.th-ch.youtube-music)$",
     },
     float = true,
-})
-hl.window_rule({
-    match = {
-        class = "^(com.github.th_ch.youtube_music)$",
-    },
-    size = "850 425",
-})
-hl.window_rule({
-    match = {
-        class = "^(pear-desktop)$",
-    },
+    size = "1200 700",
     center = true,
 })
+
+hl.window_rule({
+    match = {
+        class = "^(com.configmenu.ConfigMenu)$",
+    },
+    float = true,
+    center = true,
+})
+
 hl.window_rule({
     match = {
         class = "^(io.missioncenter.MissionCenter)$",
     },
     float = true,
-})
-hl.window_rule({
-    match = {
-        class = "^(io.missioncenter.MissionCenter)$",
-    },
+    center = true,
     size = "850 425",
 })
+
 hl.window_rule({
     match = {
-        class = "^(io.missioncenter.MissionCenter)$",
+        class = "org.gnome.baobab",
     },
-    center = true,
+    float = true,
 })

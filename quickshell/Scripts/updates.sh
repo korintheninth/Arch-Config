@@ -69,7 +69,4 @@ if [[ $(_checkCommandExists "pacman") == 0 ]]; then
     fi
 fi
 
-# ----------------------------------------------------- 
-# Output in JSON format for Waybar
-# ----------------------------------------------------- 
 echo "$updates"

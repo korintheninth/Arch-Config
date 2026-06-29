@@ -27,10 +27,6 @@ Rectangle {
             onRead: chunk => {
                 let parts = chunk.split(";")
                 
-                if (parts[parts.length - 1] === "") {
-                    parts.pop()
-                }
-                
                 cava.cavaBars = parts.map(v => parseInt(v) / 1000.0)
             }
         }
@@ -46,7 +42,7 @@ Rectangle {
 
             Rectangle {
                 width: cava.barWidth
-                height: Math.max(0, cava.cavaBars[index] * cava.height)
+                height: Math.max(0.0001, cava.cavaBars[index] * cava.height)
                 color: cava.barColor
                 anchors.bottom: parent.bottom 
                 Behavior on height {

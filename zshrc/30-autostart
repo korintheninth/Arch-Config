@@ -42,18 +42,24 @@ center_text() {
 }
 
 cfetch() {
-    # 1. Run fastfetch once to measure the raw width.
-    #    We strip all ANSI escape codes (colors, cursor moves) to get the true text length.
-    local width
-    width=$(fastfetch "$@" | perl -pe 's/\x1b\[[0-9;]*[mGKH]//g' | wc -L)
+  local width pad term_width
+  term_width="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
 
-    # 2. Calculate the left padding to center it.
-    local pad
-    pad=$(( ($(tput cols) - width) / 2 ))
+  width=$(fastfetch "$@" | perl -0777 -pe '
+    s/\x1b[_P].*?\x1b\\//gs; 
+    
+    s/\x1b\[(\d+)G/" " x ($1 - 1)/ge; 
+    
+    s/\x1b\[(\d+)C/" " x $1/ge; 
+    
+    s/\x1b\[[0-9;]*[a-zA-Z]//g
+  ' | wc -L)
 
-    # 3. Run fastfetch again, passing the calculated padding.
-    #    This forces fastfetch to render the spacing internally, avoiding the "top line shift" bug.
-    fastfetch "$@" --logo-padding-left "$pad"
+  pad=$(( (term_width - width) / 2 ))
+  
+  (( pad < 0 )) && pad=0
+
+  fastfetch "$@" --logo-padding-left "$pad"
 }
 
 if [[ $(tty) == *"pts"* ]]; then
@@ -65,4 +71,4 @@ fortune ~/.config/quotes/quotes | boxes -d ansi | center_text
 # -----------------------------------------------------
 # Day Counter
 # -----------------------------------------------------
-~/Projects/Counter/counter.sh banner | center_text
+#~/Projects/Counter/counter.sh banner | center_text

@@ -13,7 +13,10 @@ Rectangle {
     property int artistMaxLength: 16
     property int albumMaxLength: 16
     
-    Component.onCompleted: Styler.apply(media, Styles.media)
+    Component.onCompleted: {
+        Styler.apply(media, Styles.media)
+        Styler.apply(label, Styles.media.text)
+    }
 
     function truncate(str, max) {
         if (!str || max <= 0) return str ?? ""
@@ -21,10 +24,12 @@ Rectangle {
     }
     function isRealPlayer(p) {
         const entry = (p?.desktopEntry ?? "").toLowerCase()
-        const dbus = (p?.dbusName ?? "").toLowerCase()
-        return p && !(entry === "firefox"
-            || dbus.includes("firefox"))
+        const identity = (p?.identity ?? "").toLowerCase()
+        return p && (entry === "spotify"
+            || identity.includes("youtube-music")
+            || identity.includes("mixtapes"))
     }
+    
     property MprisPlayer player: {
         const players = Mpris.players.values
         for (const p of players)
@@ -99,7 +104,12 @@ Rectangle {
         }
     }
 
-    Cava {height: media.implicitHeight - 2; anchors.left: label.right; visible: media.player.isPlaying; cavaProcess.running: media.player.isPlaying}
+    Cava {
+        height: media.implicitHeight - 2
+        anchors.left: label.right
+        visible: media.player && media.player.isPlaying
+        cavaProcess.running: media.player && media.player.isPlaying
+        }
 
     implicitWidth: label.paintedWidth + 20
 }

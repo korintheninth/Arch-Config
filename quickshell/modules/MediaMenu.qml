@@ -8,12 +8,13 @@ import Quickshell.Services.Pipewire
 import "../themes"
 import "../themes/StyleEngine.js" as Styler
 import "../components"
+import "../services"
 
 PopupWindow {
     id: mediaMenu
 
     color: "transparent"
-    property int menuWidth: 300
+    property int menuWidth: 301
     property int menuHeight: 200
     property int controlsSpacing: 20
     property int controlsBottomOffset: 35
@@ -50,7 +51,6 @@ PopupWindow {
         }
     }
 
-    
     function truncate(str, max) {
         if (!str || max <= 0) return str ?? ""
         return str.length > max ? str.slice(0, max - 1) + "…" : str
@@ -60,7 +60,8 @@ PopupWindow {
         const entry = (p?.desktopEntry ?? "").toLowerCase()
         const identity = (p?.identity ?? "").toLowerCase()
         return p && (entry === "spotify"
-            || identity.includes("youtube_music"))
+            || identity.includes("youtube-music")
+            || identity.includes("mixtapes"))
     }
 
     property MprisPlayer player: {
@@ -95,16 +96,35 @@ PopupWindow {
     }
     on_NodeCountChanged: updateStreams()
     on_PlayerNameChanged: updateStreams()
-
-    
     PwObjectTracker {
         objects: outputStreams
     }
-    
+
     Component.onCompleted: {
-        if (typeof Styles !== "undefined" && Styles.mediaMenu)
-            Styler.apply(mediaMenu, Styles.mediaMenu)
+        Styler.apply(mediaMenu, Styles.mediaMenu)
+        Styler.apply(coverFrame, Styles.mediaMenu.cover)
+        Styler.apply(coverMask, Styles.mediaMenu.cover.mask)
+        Styler.apply(menuCava, Styles.mediaMenu.cava)
+        Styler.apply(title, Styles.mediaMenu.text)
+        Styler.apply(artist, Styles.mediaMenu.text)
+        Styler.apply(lyrics.lr1, Styles.mediaMenu.text)
+        Styler.apply(lyrics.lr2, Styles.mediaMenu.text)
+        Styler.apply(lyrics.lr3, Styles.mediaMenu.text)
+        Styler.apply(lyrics.lr4, Styles.mediaMenu.text)
+        Styler.apply(lyrics.lr1, { color: Styles.mediaMenu.lyrics.inactiveColor })
+        Styler.apply(lyrics.lr3, { color: Styles.mediaMenu.lyrics.inactiveColor })
+        Styler.apply(lyrics.lr4, { color: Styles.mediaMenu.lyrics.inactiveColor })
+        Styler.apply(volumeSlider, Styles.mediaMenu.slider)
+        Styler.apply(volumeSlider, Styles.mediaMenu.volumeSlider)
+        Styler.apply(seekSlider, Styles.mediaMenu.slider)
+        Styler.apply(seekSlider, Styles.mediaMenu.seekSlider)
+        Styler.apply(prevBtn, Styles.mediaMenu.button)
+        Styler.apply(playBtn, Styles.mediaMenu.button)
+        Styler.apply(nextBtn, Styles.mediaMenu.button)
+        Styler.apply(ytmusic, Styles.mediaMenu.ytmusic)
+        Styler.apply(lyrics, Styles.mediaMenu.lyrics)
         updateStreams()
+        LyricsService.updateLyrics()
     }
 
     Rectangle {
@@ -158,14 +178,13 @@ PopupWindow {
             anchors.centerIn: parent
             width: mediaMenu.menuWidth
             height: mediaMenu.menuHeight
-            color: mediaMenu.background.color
         }
 
         Image {
             id: coverbg
             anchors.centerIn: parent
-            width: mediaMenu.menuWidth - Styles.mediaMenu.background.border.width * 2
-            height: mediaMenu.menuHeight - Styles.mediaMenu.background.border.width * 2
+            width: bg.width - bg.border.width * 2
+            height: bg.height - bg.border.width * 2
             visible: mediaMenu.player && mediaMenu.player.trackArtUrl.length > 0
             source: mediaMenu.player ? mediaMenu.player.trackArtUrl : ""
             fillMode: Image.PreserveAspectCrop
@@ -181,37 +200,32 @@ PopupWindow {
             }
         }
 
-
         Cava {
+            id: menuCava
             override: true
-            height: 200
-            width: 300
             anchors.centerIn: bg
-            bars.anchors.bottomMargin: 0
-            barWidth: 5
+            anchors.horizontalCenterOffset: 1
+
+            barWidth: (this.width - Styles.mediaMenu.cava.barCount - 2) / Styles.mediaMenu.cava.barCount
             bars.spacing: 1
-            confPath: "menu.conf"
-            barColor: Qt.rgba(mediaMenu.cavaColor.r, mediaMenu.cavaColor.g, mediaMenu.cavaColor.b, 0.4)
             cavaProcess.running: mediaMenu.player && mediaMenu.player.isPlaying
             visible: mediaMenu.player && mediaMenu.player.isPlaying
         }
 
         Item {
             id: coverFrame
-            anchors.centerIn: parent
-            anchors.verticalCenterOffset: -60
-            width: 64
-            height: 64
-            visible: mediaMenu.player && mediaMenu.player.trackArtUrl.length > 0
+            anchors.left: bg.left
+            anchors.top: bg.top
+            anchors.leftMargin: 30
             property int coverRadius: 0
             property int coverBorderWidth: 1
-            property color coverBorderColor: Styles.mediaMenu.background.border.color
+            property color coverBorderColor: "transparent"
+            visible: mediaMenu.player && mediaMenu.player.trackArtUrl.length > 0
             
             Rectangle {
                 id: coverMask
                 anchors.fill: parent
                 radius: coverFrame.coverRadius
-                color: Styles.mediaMenu.background.border.color
                 visible: false
                 layer.enabled: true
                 layer.smooth: true
@@ -238,19 +252,24 @@ PopupWindow {
                 border.color: coverFrame.coverBorderColor
             }
         }
+        
+        Lyrics {
+            id: lyrics
+            anchors.centerIn: bg
+            width: bg.width - coverFrame.width - coverFrame.anchors.leftMargin - 10
+            position: player ? player.position : 0
+        }
 
         Column {
-            anchors.centerIn: parent
+            anchors.bottom: seekSlider.top
+            anchors.left: seekSlider.left
             BetterText {
                 id: title
                 text: player ? truncate(player.trackTitle, 27) : ""
-
-                Component.onCompleted: Styler.apply(title, Styles.mediaMenu.text)
             }
             BetterText {
                 id: artist
                 text: truncate(player?.trackArtist + " - " + player?.trackAlbum, 27)
-                Component.onCompleted: Styler.apply(artist, Styles.mediaMenu.text)
             }
         }
 
@@ -261,6 +280,7 @@ PopupWindow {
             onTriggered: {
                 if (player) {
                     seekSlider.value = player.position
+                    lyrics.populateLyrics()
                 }
             }
         }
@@ -268,17 +288,14 @@ PopupWindow {
         Slider {
             id: volumeSlider
             anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -55
-            anchors.leftMargin: 15
+            anchors.top: parent.top
             orientation: Qt.Vertical
             from: 0.0
             to: 1.0
             live: true
             value: mediaMenu.outputStreams[0] ? mediaMenu.outputStreams[0].audio.volume : 0
 
-            implicitHeight: 70
-            implicitWidth: 6
+            property alias bar: volumeBar
             
             onMoved: {
                 for (var n of outputStreams) {
@@ -290,19 +307,15 @@ PopupWindow {
                 x: volumeSlider.leftPadding + volumeSlider.availableWidth / 2 - width / 2
                 y: volumeSlider.topPadding
 
-                implicitWidth: 6
-                implicitHeight: 70
-
-                width: implicitWidth
+                width: volumeSlider.implicitWidth
                 height: volumeSlider.availableHeight
                 radius: 0
-                color: Styles.mediaMenu.background.border.color
 
                 Rectangle {
+                    id: volumeBar
                     anchors.bottom: parent.bottom
                     width: parent.width
                     height: parent.height * volumeSlider.position
-                    color: Styles.mediaMenu.background.color
                     radius: 0
                 }
             }
@@ -310,7 +323,6 @@ PopupWindow {
             handle: Rectangle {
                 implicitWidth: volumeSlider.width
                 implicitHeight: 0
-                color: Styles.mediaMenu.background.border.color
                 x: 0
                 y: volumeSlider.topPadding + volumeSlider.visualPosition * (volumeSlider.availableHeight - height)
             }
@@ -318,34 +330,29 @@ PopupWindow {
 
         Slider {
             id: seekSlider
-            anchors.centerIn: parent
-            anchors.verticalCenterOffset: 25
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
             from: 0
             to: player ? player.length : 0
             live: true
             onMoved: {
                 player.position = value
             }
-            
-            implicitWidth: 270
-            implicitHeight: 6
+
+            property alias bar: seekBar
 
             background: Rectangle {
                 x: seekSlider.leftPadding
                 y: seekSlider.topPadding + seekSlider.availableHeight / 2 - height / 2
 
-                implicitWidth: 270
-                implicitHeight: 6
-
                 width: seekSlider.availableWidth
-                height: implicitHeight
+                height: seekSlider.implicitHeight
                 radius: 0
-                color: Styles.mediaMenu.background.border.color
 
                 Rectangle {
+                    id: seekBar
                     width: parent.width * seekSlider.visualPosition
                     height: parent.height
-                    color: Styles.mediaMenu.background.color
                     radius: 0
                 }
             }
@@ -353,7 +360,6 @@ PopupWindow {
             handle: Rectangle {
                 implicitWidth: 0
                 implicitHeight: seekSlider.height
-                color: Styles.mediaMenu.background.border.color
                 x: seekSlider.leftPadding
                     + seekSlider.visualPosition * (seekSlider.availableWidth - width)
                 y: 0
@@ -375,7 +381,6 @@ PopupWindow {
                     if (mediaMenu.player)
                         mediaMenu.player.previous()
                 }
-                Component.onCompleted: Styler.apply(prevBtn, Styles.mediaMenu.button)
             }
             MediaMenuButton {
                 id: playBtn
@@ -390,7 +395,6 @@ PopupWindow {
                     else if (p.canPlay)
                         p.play()
                 }
-                Component.onCompleted: Styler.apply(playBtn, Styles.mediaMenu.button)
             }
             MediaMenuButton {
                 id: nextBtn
@@ -400,23 +404,18 @@ PopupWindow {
                     if (mediaMenu.player)
                         mediaMenu.player.next()
                 }
-                Component.onCompleted: Styler.apply(nextBtn, Styles.mediaMenu.button)
             }
         }
         Button {
             id: ytmusic
-            anchors.top: parent.top
+            anchors.bottom: parent.bottom
             anchors.right: parent.right
-            anchors.topMargin: 10
-            anchors.rightMargin: 10
             icon.source: "../icons/ytmusic.svg"
-            background.visible: false
             icon.color: "transparent"
             display: AbstractButton.IconOnly
             onClicked: {
                     Quickshell.execDetached(["pear-desktop"])
             }
-            Component.onCompleted: Styler.apply(ytmusic, Styles.mediaMenu.ytmusic)
         }
     }
 }

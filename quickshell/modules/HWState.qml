@@ -10,6 +10,8 @@ Item {
 
     anchors.verticalCenter: parent.verticalCenter
     implicitWidth: bars.implicitWidth
+
+    Component.onCompleted: Styler.apply(bars, Styles.hwState)
     
     Row {
         id: bars
@@ -32,8 +34,6 @@ Item {
         }
 
         anchors.verticalCenter: parent.verticalCenter
-
-        Component.onCompleted: Styler.apply(bars, Styles.hwState)
 
         
         Rectangle {
@@ -155,7 +155,7 @@ Item {
 
             running: true
             repeat: true
-            interval: 2500
+            interval: 2000
             onTriggered: {
                 fetch_memory_usage.running = true
                 fetch_cpu_usage.running = true

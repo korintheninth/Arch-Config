@@ -14,6 +14,11 @@ Item {
 
     implicitWidth: count * buttonWidth + Math.max(0, count - 1) * spacing
 
+    function applyWorkspaceButtonTextStyle(target) {
+        if (Styles.workspaces.button.text)
+            Styler.apply(target, Styles.workspaces.button.text)
+    }
+
     Component.onCompleted: Styler.apply(workspaces, Styles.workspaces)
 
     Rectangle {
@@ -58,10 +63,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.fill: parent
 
-                    Component.onCompleted: {
-                        if (wsButton.btnStyle.text)
-                            Styler.apply(this, wsButton.btnStyle.text)
-                    }
+                    Component.onCompleted: workspaces.applyWorkspaceButtonTextStyle(this)
                 }
             }
         }

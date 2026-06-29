@@ -65,10 +65,27 @@ Rectangle {
         }
     }
 
+    function applyTaskRowStyles(checkLabel, taskText) {
+        Styler.apply(checkLabel, Styles.todoist.task.check)
+        Styler.apply(taskText, Styles.todoist.task.text)
+        if (styleOverride) {
+            Styler.apply(checkLabel, styleOverride.task?.check)
+            Styler.apply(taskText, styleOverride.task?.text)
+        }
+    }
+
     Component.onCompleted: {
         Styler.apply(todoist, Styles.todoist)
         if (styleOverride)
             Styler.apply(todoist, styleOverride)
+        Styler.apply(emptyLabel, Styles.todoist.empty.text)
+        Styler.apply(loadingLabel, Styles.todoist.empty.text)
+        Styler.apply(errorLabel, Styles.todoist.error.text)
+        if (styleOverride) {
+            Styler.apply(emptyLabel, styleOverride.empty?.text)
+            Styler.apply(loadingLabel, styleOverride.empty?.text)
+            Styler.apply(errorLabel, styleOverride.error?.text)
+        }
         applyLocalTasks()
     }
 
@@ -100,11 +117,6 @@ Rectangle {
                         text: closing ? "◌" : "□"
                         opacity: closing ? 0.45 : 1
                         property bool hovered: false
-                        Component.onCompleted: {
-                            Styler.apply(checkLabel, Styles.todoist.task.check)
-                            if (styleOverride)
-                                Styler.apply(checkLabel, styleOverride.task?.check)
-                        }
                         color: hovered
                             ? Styles.todoist.task.check.hoverColor
                             : TodoistService.priorityColor(priority)
@@ -121,6 +133,7 @@ Rectangle {
                 }
 
                 BetterText {
+                    id: taskText
                     Layout.fillWidth: true
                     text: content
                     wrapMode: Text.Wrap
@@ -128,45 +141,30 @@ Rectangle {
                     elide: Text.ElideRight
                     opacity: closing ? 0.45 : 1
                     font.strikeout: closing
-                    Component.onCompleted: {
-                        Styler.apply(this, Styles.todoist.task.text)
-                        if (styleOverride)
-                            Styler.apply(this, styleOverride.task.text)
-                    }
                 }
+
+                Component.onCompleted: todoist.applyTaskRowStyles(checkLabel, taskText)
             }
         }
 
         BetterText {
+            id: emptyLabel
             visible: !TodoistService.loading && taskModel.count === 0 && !TodoistService.error
             text: "No tasks"
-            Component.onCompleted: {
-                Styler.apply(this, Styles.todoist.empty.text)
-                if (styleOverride)
-                    Styler.apply(this, styleOverride.empty.text)
-            }
         }
 
         BetterText {
+            id: loadingLabel
             visible: TodoistService.loading && taskModel.count === 0
             text: "…"
-            Component.onCompleted: {
-                Styler.apply(this, Styles.todoist.empty.text)
-                if (styleOverride)
-                    Styler.apply(this, styleOverride.empty.text)
-            }
         }
 
         BetterText {
+            id: errorLabel
             visible: TodoistService.error.length > 0
             text: TodoistService.error
             wrapMode: Text.Wrap
             width: taskColumn.width
-            Component.onCompleted: {
-                Styler.apply(this, Styles.todoist.error.text)
-                if (styleOverride)
-                    Styler.apply(this, styleOverride.error.text)
-            }
         }
     }
 

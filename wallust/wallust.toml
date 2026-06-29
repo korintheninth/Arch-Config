@@ -47,9 +47,16 @@ check_contrast = false
 # ¡ If either one is a directory, then both SHOULD be one. !
 # zathura = { template = 'zathura', target = '~/.config/zathura/zathurarc' }
 kitty = {template = 'kitty_template.conf', target = '~/.config/kitty/colors.conf'}
+rofi = {template = 'rofi.rasi', target = '~/.config/rofi/colors.rasi'}
+firefox = {template = 'firefox.css', target = '~/.mozilla/firefox/zq5iyspq.default-release/chrome/colors.css'}
+ohmyposh = {template = 'ohmyposh.json', target = '~/.config/ohmyposh/colors.json'}
 cursor = {template = 'colors-wal', target = '~/.cache/wal/colors'}
 cursor2 = {template = 'colors-wal.json', target = '~/.cache/wal/colors.json'}
 quickshell = {template = 'quickshell.qml', target = '~/.config/quickshell/themes/Colors.qml'}
 keyboard = {template = 'keyboard_template.txt', target = '~/.cache/hyprland-dotfiles/keyboard.txt'}
 hypr = {template = 'hyprland.lua', target = '~/.config/hypr/colors.lua'}
 hyprlock = {template = 'hyprlock.conf', target = '~/.config/hypr/colors.conf'}
+ff = {template = 'arch.svg', target = '~/.config/fastfetch/icons/arch.svg'}
+ff2 = {template = 'archmono.svg', target = '~/.config/fastfetch/icons/archmono.svg'}
+ff3 = {template = 'archneon.svg', target = '~/.config/fastfetch/icons/archneon.svg'}
+ff4 = {template = 'archneongrad.svg', target = '~/.config/fastfetch/icons/archneongrad.svg'}

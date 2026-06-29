@@ -1,4 +1,3 @@
-// Match GTK/Waybar icon theme (see ~/.config/gtk-3.0/settings.ini)
 //@ pragma IconTheme Papirus
 //@ pragma UseQApplication
 

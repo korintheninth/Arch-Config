@@ -120,7 +120,6 @@ Singleton {
             const due = task.due
             if (!due || !due.date)
                 continue
-            console.log(task.due.date, task.due.string, task.due.is_recurring, task.content)
             const priority = task.priority || 1
             if (!map[due.date] || priority > map[due.date])
                 map[due.date] = priority

@@ -11,6 +11,7 @@ export PATH="/home/korin/.local/bin:/usr/bin:/usr/local/bin"
 # -----------------------------------------------------
 cache_folder="$HOME/.cache/hyprland-dotfiles"
 cachefile="$cache_folder/current_wallpaper"
+ffimage="archneongrad.svg"
 
 _writeLog() {
     m=$1
@@ -78,9 +79,17 @@ $HOME/.local/bin/matugen image $used_wallpaper -m "dark" --type scheme-fidelity
 
 wallust run $used_wallpaper
 
+python /home/korin/.config/hypr/scripts/neon.py $HOME/.config/fastfetch/icons/archneon.svg
+python /home/korin/.config/hypr/scripts/neon.py $HOME/.config/fastfetch/icons/archneongrad.svg
+inkscape $HOME/.config/fastfetch/icons/$ffimage -o $HOME/.config/fastfetch/icons/arch.png
+inkscape $HOME/.config/fastfetch/icons/$ffimage -w 64 -h 64 -o $HOME/.mozilla/firefox/zq5iyspq.default-release/chrome/arch.png
+cp $HOME/.config/fastfetch/icons/$ffimage $HOME/.mozilla/firefox/zq5iyspq.default-release/chrome/arch.svg
+rm -rf $HOME/.cache/fastfetch
+
 pkill -SIGUSR1 kitty
 
 cp $used_wallpaper $cache_folder/current_wallpaper.png
+cp $used_wallpaper /home/korin/.mozilla/firefox/zq5iyspq.default-release/wallpaper/c22a40da-cb01-4d64-a92e-065132b3d658
 
 # -----------------------------------------------------
 # Update keyboard

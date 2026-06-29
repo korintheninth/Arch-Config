@@ -36,6 +36,21 @@ Rectangle {
         valueLabel.text: String(updates.count)
         valueLabel.color: updates.labelColor
     }
+    
+    Process {
+        id: installUpdates
+        command: [
+            "kitty",
+            "--class", "dotfiles-floating",
+            "-e",
+            Quickshell.shellPath("Scripts/installupdates.sh")
+        ]
+        onRunningChanged: {
+            if (!running) {
+                UpdateChecker.refresh()
+            }
+        }
+    }
 
     MouseArea {
         anchors.fill: parent
@@ -43,13 +58,7 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                Quickshell.execDetached([
-                    "kitty",
-                    "--class", "dotfiles-floating",
-                    "-e",
-                    Quickshell.shellPath("Scripts/installupdates.sh")
-                ])
-                UpdateChecker.refresh()
+                installUpdates.running = true
             }
         }
     }

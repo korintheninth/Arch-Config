@@ -9,19 +9,9 @@ configuration {
 /* ---- Load colors ---- */
 @theme "~/.config/rofi/colors.rasi"
 @import "~/.config/rofi/vars.rasi"
-/* ---- Load wallpaper ---- */
-@import "~/.cache/hyprland-dotfiles/current_wallpaper.rasi"
-
-/* ---- Map colors ---- */
-* {
-    color11: @primary;
-    color5: @on-primary-fixed;
-    foreground: @on-surface;
-}
-
 /* ---- Window ---- */
 window {
-    width:                       25em;
+    width:                       20em;
     location:                    northeast;   /* Top Right */
     anchor:                      northeast;   /* Anchor to Top Right */
     x-offset:                    -20px;       /* Margin from right edge */
@@ -31,11 +21,11 @@ window {
     
     border:                      2px;
     border-color:                @primary;
-    border-radius:               var(menu-radius);
+    border-radius:               @menu-radius;
     
     background-color:            @background;
     spacing:                     0;
-    padding:                     10px;
+    padding:                     0px;
     cursor:                      "default";
     enabled:                     true;
 }
@@ -43,36 +33,35 @@ window {
 /* ---- Main Box ---- */
 mainbox {
     enabled:                     true;
-    spacing:                     10px;
+    spacing:                     0px;
     padding:                     0em;
     orientation:                 vertical;
     children:                    [ "listbox" ];
     background-color:            transparent;
-    background-image:            @current-image;
 }
 
 /* ---- Input Bar ---- */
 inputbar {
     enabled:                     true;
-    padding:                     8px;
+    padding:                     0px;
     margin:                      0;
     children:                    [ "textbox-prompt-colon", "entry" ];
-    border-radius:               var(input-radius);
+    border-radius:               @input-radius;
     background-color:            @surface;
 }
 
 textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
-    str:                         "  ";
-    padding:                     0.5em 0.3em 0 0;
+    str:                         "";
+    padding:                     0.2em 0.3em 0 1em;
     text-color:                  @on-surface;
     background-color:            transparent;
 }
 
 entry {
     enabled:                     true;
-    padding:                     0.5em;
+    padding:                     0.2em 0em 0.2em 1.4em;
     text-color:                  @on-surface;
     cursor:                      text;
     placeholder:                 "Search Clipboard";
@@ -93,7 +82,7 @@ listbox {
 listview {
     enabled:                     true;
     columns:                     1;
-    lines:                       8;
+    lines:                       15;
     cycle:                       false;
     dynamic:                     true;
     scrollbar:                   false;
@@ -102,8 +91,8 @@ listview {
     fixed-height:                false;
     fixed-columns:               true;
     
-    spacing:                     5px;
-    padding:                     10px 0 0 0;
+    spacing:                     0px;
+    padding:                     0px 0 0 0;
     background-color:            transparent;
     text-color:                  @on-surface;
     cursor:                      "default";
@@ -112,18 +101,18 @@ listview {
 /* ---- Elements ---- */
 element {
     enabled:                     true;
-    spacing:                     10px;
-    padding:                     6px 10px;
+    spacing:                     0px;
+    padding:                     2px 0px 2px 10px;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @on-surface;
-    border-radius:               var(element-radius);
+    border-radius:               @element-radius;
 }
 
 element selected.normal {
     background-color:            @primary;
     text-color:                  @background;
-    border-radius:               var(element-radius);
+    border-radius:               @element-radius;
 }
 
 element normal.normal {

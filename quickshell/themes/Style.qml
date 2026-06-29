@@ -5,9 +5,10 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property color bgBase: Colors.color6
-    readonly property color bgSecondary: Colors.color5
-    readonly property color fgBase: Colors.color1
+    readonly property color bgBase: Colors.color1
+    readonly property color bgSecondary: Colors.color2
+    readonly property color fgBase: Colors.color6
+    readonly property color fgSecondary: Colors.color5
     readonly property string fontFamily: "Departure Mono"
     readonly property double pixelSize: 11
 
@@ -58,8 +59,8 @@ Singleton {
     })
 
     readonly property var mediaMenu: ({
-        "menuWidth": 301,
-        "menuHeight": 200,
+        "menuWidth": 601,
+        "menuHeight": 225,
         "controlsSpacing": 20,
         "controlsBottomOffset": 35,
         "cavaColor": fgBase,
@@ -90,13 +91,80 @@ Singleton {
             },
             "color": fgBase
         },
+        "cover": {
+            "width": 96,
+            "height": 96,
+            "coverRadius": 0,
+            "coverBorderWidth": 1,
+            "coverBorderColor": fgBase,
+            "anchors": {
+                "leftMargin": 30,
+                "topMargin": 15
+            },
+            "mask": {
+                "color": fgBase
+            }
+        },
+        "cava": {
+            "width": 601,
+            "height": 225,
+            "bars": {
+                "anchors": {
+                    "bottomMargin": 0
+                }
+            },
+            "barCount": 70,
+            "barColor": Qt.rgba(fgSecondary.r, fgSecondary.g, fgSecondary.b, 0.4),
+            "confPath": "wallpaper.conf"
+        },
+        "slider": {
+            "background": {
+                "color": fgBase
+            },
+            "bar": {
+                "color": bgBase
+            },
+            "handle": {
+                "color": fgBase
+            }
+        },
+        "volumeSlider": {
+            "implicitWidth": 6,
+            "implicitHeight": 96,
+            "anchors": {
+                "leftMargin": 15,
+                "topMargin": 20
+            }
+        },
+        "seekSlider": {
+            "implicitWidth": 550,
+            "implicitHeight": 6,
+            "anchors": {
+                "bottomMargin": 65
+            }
+        },
         "ytmusic": {
             "width": 36,
             "height": 36,
+            "anchors": {
+                "bottomMargin": 10,
+                "rightMargin": 10
+            },
+            "background": {
+                "visible": false
+            },
             "icon": {
                 "width": 32,
-                "height": 32,
+                "height": 32
             }
+        },
+        "lyrics": {
+            "spacing": 5,
+            "anchors": {
+                "horizontalCenterOffset": 63,
+                "verticalCenterOffset": -45
+            },
+            "inactiveColor": fgSecondary
         }
     })
 
@@ -262,7 +330,7 @@ Singleton {
                     "leftMargin": 10
                 },
             },
-            "baseColor": bgBase,
+            "baseColor": fgBase,
             "warningColor": "#e6c200",
             "criticalColor": "#e54545",
             "warningThreshold": 80,
@@ -270,7 +338,7 @@ Singleton {
         },
         "bars": {
             "color": bgSecondary,
-            "height": 40,
+            "height": 45,
             "width": 250,
             "border": {
                 "width": 2,
@@ -281,21 +349,45 @@ Singleton {
                     "topMargin": 4,
                     "leftMargin": 10
                 },
-                "color": bgBase
+                "color": fgBase
             },
             "bar": {
                 "width": 230,
                 "height": 15,
                 "leftMargin": 5,
                 "anchors": {
-                    "bottomMargin": 5,
+                    "bottomMargin": 7,
                     "leftMargin": 10,
+                    "topMargin": 5,
                 },
                 "label": {
                     "color": fgBase
                 },
-                "color": fgBase,
+                "color": fgSecondary,
                 "barColor": bgBase
+            },
+            "withProcessesHeight": 105,
+            "processes": {
+                "list": {
+                    "anchors": {
+                        "topMargin": 5,
+                        "leftMargin": 10,
+                        "rightMargin": 10,
+                        "bottomMargin": 4
+                    }
+                },
+                "row": {
+                    "height": 18,
+                    "name": {
+                        "color": fgBase
+                    },
+                    "pid": {
+                        "color": fgSecondary
+                    },
+                    "usage": {
+                        "color": fgBase
+                    }
+                }
             }
 
         },
@@ -308,7 +400,7 @@ Singleton {
                 "color": bgBase
             },
             "text": {
-                "color": bgBase,
+                "color": fgBase,
                 "anchors": {
                     "topMargin": 3,
                     "leftMargin": 10
@@ -332,7 +424,7 @@ Singleton {
                     },
                     "icon": {
                         "radius": 5,
-                        "checkedColor": fgBase,
+                        "checkedColor": fgSecondary,
                         "normalColor": bgSecondary,
                         "border": {
                             "color": bgBase,
@@ -363,7 +455,7 @@ Singleton {
             },
             "header": {
                 "text": {
-                    "color": bgBase,
+                    "color": fgSecondary,
                     "font": {
                         "family": fontFamily,
                         "bold": true
@@ -515,7 +607,7 @@ Singleton {
                     "topMargin": 4,
                     "leftMargin": 10
                 },
-                "color": bgBase
+                "color": fgBase
             },
             "slider": {
                 "anchors": {
@@ -536,7 +628,7 @@ Singleton {
         },
         "slider": {
             "background": {
-                "color": fgBase
+                "color": fgSecondary
             },
             "bar": {
                 "color": bgBase
@@ -591,10 +683,75 @@ Singleton {
         },
     })
 
+    readonly property var prayerTimes: ({
+        "color": "transparent",
+        "radius": 0,
+        "rowSpacing": 5,
+        "maxWidth": 230,
+        "pixelSize": 11,
+        "date": {
+            "font": {
+                "family": fontFamily,
+                "bold": false,
+            },
+            "color": fgBase
+        },
+        "row": {
+            "name": {
+                "font": {
+                    "family": fontFamily,
+                    "bold": false,
+                },
+                "color": Qt.rgba(fgBase.r, fgBase.g, fgBase.b, 0.55)
+            },
+            "time": {
+                "font": {
+                    "family": fontFamily,
+                    "bold": false,
+                },
+                "color": Qt.rgba(fgBase.r, fgBase.g, fgBase.b, 0.55)
+            },
+            "active": {
+                "name": {
+                    "font": {
+                        "family": fontFamily,
+                        "bold": true,
+                    },
+                    "color": fgBase
+                },
+                "time": {
+                    "font": {
+                        "family": fontFamily,
+                        "bold": true,
+                    },
+                    "color": fgBase
+                }
+            }
+        },
+        "empty": {
+            "text": {
+                "font": {
+                    "family": fontFamily,
+                    "bold": false
+                },
+                "color": Qt.rgba(fgBase.r, fgBase.g, fgBase.b, 0.45)
+            }
+        },
+        "error": {
+            "text": {
+                "font": {
+                    "family": fontFamily,
+                    "bold": false
+                },
+                "color": "#e54545"
+            }
+        }
+    })
+
     readonly property var todoist: ({
         "color": "transparent",
         "radius": 0,
-        "rowSpacing": 3,
+        "rowSpacing": 10,
         "taskMaxWidth": 320,
         "task": {
             "text": {
@@ -644,6 +801,135 @@ Singleton {
             "p2": "#e6a032",
             "p3": "#5b8fd4",
             "p4": Qt.rgba(fgBase.r, fgBase.g, fgBase.b, 0.22)
+        }
+    })
+
+    readonly property var wallpaper: ({
+        "tasks": {
+            "widthPadding": 30,
+            "heightPadding": 65,
+            "color": Qt.rgba(bgBase.r, bgBase.g, bgBase.b, 0.70),
+            "radius": 10,
+            "anchors": {
+                "topMargin": 50,
+                "leftMargin": 50
+            },
+            "header": {
+                "text": "Today's Tasks:",
+                "font": {
+                    "family": "Silkscreen",
+                    "pixelSize": 22,
+                    "bold": false
+                },
+                "color": fgBase,
+                "anchors": {
+                    "topMargin": 10,
+                    "leftMargin": 15
+                }
+            },
+            "todoist": {
+                "anchors": {
+                    "verticalCenterOffset": 18
+                },
+                "styleOverride": {
+                    "rowSpacing": 20,
+                    "taskMaxWidth": 300,
+                    "task": {
+                        "text": {
+                            "font": {
+                                "pixelSize": 22,
+                                "family": "Silkscreen"
+                            }
+                        },
+                        "check": {
+                            "font": {
+                                "pixelSize": 20
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "clock": {
+            "color": "transparent",
+            "radius": 0,
+            "text": {
+                "font": {
+                    "family": "Silkscreen",
+                    "pixelSize": 200,
+                    "bold": false
+                },
+                "color": fgBase
+            }
+        },
+        "media": {
+            "width": 800,
+            "height": 300,
+            "color": "transparent",
+            "controlsSpacing": 20,
+            "controlsBottomOffset": 35,
+            "titleMaxLength": 75,
+            "artistMaxLength": 75,
+            "anchors": {
+                "bottomMargin": 60,
+                "rightMargin": 60
+            },
+            "text": {
+                "font": {
+                    "family": "Silkscreen",
+                    "pixelSize": 15,
+                    "bold": false
+                },
+                "color": fgBase
+            },
+            "button": {
+                "size": 50,
+                "radius": 25,
+                "normalColor": Qt.rgba(fgBase.r, fgBase.g, fgBase.b, 0.2),
+                "hoverColor": Qt.rgba(bgBase.r, bgBase.g, bgBase.b, 0.5),
+                "pressedColor": Qt.rgba(bgBase.r, bgBase.g, bgBase.b, 0.2),
+                "iconSize": 16,
+                "iconColor": fgBase,
+                "iconHoverColor": bgBase,
+                "iconPressedColor": fgBase
+            },
+            "cava": {
+                "barCount": 70,
+                "barColor": Qt.rgba(bgSecondary.r, bgSecondary.g, bgSecondary.b, 0.6),
+                "confPath": "wallpaper.conf",
+                "bars": {
+                    "spacing": 1
+                }
+            },
+            "slider": {
+                "background": {
+                    "color": fgBase
+                },
+                "bar": {
+                    "color": bgBase
+                },
+                "handle": {
+                    "color": fgBase
+                }
+            },
+            "seekSlider": {
+                "implicitHeight": 6
+            },
+        },
+        "lyrics": {
+            "anchors": {
+                "topMargin": 90,
+                "rightMargin": 60
+            },
+            "text": {
+                "font": {
+                    "family": "Silkscreen",
+                    "pixelSize": 22,
+                    "bold": false
+                },
+                "color": fgBase
+            },
+            "inactiveColor": fgSecondary,
         }
     })
 }

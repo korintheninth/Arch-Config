@@ -5,8 +5,8 @@ Button {
     id: btn
 
     property string iconType: "play"
-    property int buttonSize: 50
-    property real buttonRadius: 25
+    property int size: 50
+    property real radius: 25
     property color normalColor: "#1a1a1a"
     property color hoverColor: "#e5e0cc"
     property color pressedColor: "#599d8b"
@@ -22,14 +22,14 @@ Button {
         ? btn.iconPressedColor
         : btn.hovered ? btn.iconHoverColor : btn.iconColor
 
-    implicitWidth: buttonSize
-    implicitHeight: buttonSize
+    implicitWidth: size
+    implicitHeight: size
     padding: 0
     hoverEnabled: true
 
     background: Rectangle {
         anchors.fill: parent
-        radius: btn.buttonRadius
+        radius: btn.radius
         color: btn.fillColor
     }
 

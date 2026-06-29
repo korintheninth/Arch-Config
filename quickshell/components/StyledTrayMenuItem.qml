@@ -166,6 +166,9 @@ Item {
     Component.onCompleted: {
         Styler.apply(trayMenuItem, trayMenuItem._itemStyle)
         Styler.apply(separatorRow, trayMenuItem._separatorStyle)
+        Styler.apply(separatorLine, trayMenuItem._separatorStyle.line)
+        Styler.apply(labelItem, trayMenuItem._itemStyle.label)
+        Styler.apply(chevronItem, trayMenuItem._itemStyle.chevron)
     }
 
     Component.onDestruction: closeSubMenu()

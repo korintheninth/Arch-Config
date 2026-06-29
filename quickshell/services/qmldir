@@ -1,3 +1,5 @@
 singleton UpdateChecker 1.0 UpdateChecker.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton TodoistService 1.0 TodoistService.qml
+singleton LyricsService 1.0 LyricsService.qml
+singleton PrayerTimesService 1.0 PrayerTimesService.qml

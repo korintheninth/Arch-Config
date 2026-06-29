@@ -13,7 +13,7 @@ configuration {
 
 /* ---- Window ---- */
 window {
-    width:                       25em;        /* Compact width */
+    width:                       20em;        /* Compact width */
     location:                    center;      /* Middle of screen */
     anchor:                      center;      /* Anchor to middle */
     fullscreen:                  false;
@@ -21,10 +21,10 @@ window {
     
     border:                      2px;         /* Standard border */
     border-color:                @primary;    /* Uses your theme color */
-    border-radius:               var(menu-radius);        /* Rounded corners */
+    border-radius:               @menu-radius;        /* Rounded corners */
     
     background-color:            @background; /* Solid or semi-transparent based on theme */
-    padding:                     10px;        /* Slight internal padding */
+    padding:                     0px;        /* Slight internal padding */
     spacing:                     0;
     cursor:                      "default";
 }
@@ -35,15 +35,15 @@ mainbox {
     orientation:                 vertical;
     children:                    [ "inputbar", "listview" ];
     background-color:            transparent;
-    spacing:                     10px;        /* Space between input and list */
+    spacing:                     0px;        /* Space between input and list */
 }
 
 /* ---- Input Bar ---- */
 inputbar {
     enabled:                     true;
-    padding:                     8px;
+    padding:                     3px;
     background-color:            @surface;    /* Distinct background for input */
-    border-radius:               var(input-radius);
+    border-radius:               @input-radius;
     text-color:                  @on-surface;
     children:                    [ "prompt", "entry" ];
     spacing:                     10px;
@@ -68,7 +68,7 @@ entry {
 listview {
     enabled:                     true;
     columns:                     1;
-    lines:                       6;           /* Limits height to 6 items (compact) */
+    lines:                       12;
     cycle:                       true;
     dynamic:                     true;        /* Shrinks if fewer than 6 items */
     scrollbar:                   false;
@@ -77,7 +77,7 @@ listview {
     fixed-height:                false;       /* Allows shrinking */
     fixed-columns:               true;
     
-    spacing:                     5px;
+    spacing:                     0px;
     background-color:            transparent;
     text-color:                  @on-surface;
     cursor:                      "default";
@@ -86,8 +86,8 @@ listview {
 /* ---- Elements ---- */
 element {
     enabled:                     true;
-    padding:                     6px 10px;    /* Compact element padding */
-    border-radius:               var(element-radius);
+    padding:                     2px 5px;    /* Compact element padding */
+    border-radius:               @element-radius;
     background-color:            transparent;
     text-color:                  @on-surface;
     cursor:                      pointer;
@@ -121,7 +121,7 @@ element-text {
 /* ---- Error Message ---- */
 error-message {
     padding:                     15px;
-    border-radius:               var(menu-radius);
+    border-radius:               @menu-radius;
     background-color:            @background;
     text-color:                  @on-surface;
 }
