@@ -181,63 +181,13 @@ Variants {
                     }
                 }
                 
-                Timer {
-                    interval: 100
-                    running: mediaControl.player && mediaControl.player.isPlaying
-                    repeat: true
-                    onTriggered: {
-                        if (mediaControl.player) {
-                            seekSlider.value = mediaControl.player.position
-                            lyrics.populateLyrics()
-                        }
-                    }
-                }
-
-                Slider {
+                MediaSlider {
                     id: seekSlider
+                    player: mediaControl.player
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                    from: 0
-                    to: mediaControl.player ? mediaControl.player.length : 0
-                    live: true
-                    onMoved: {
-                        mediaControl.player.position = value
-                    }
-
                     implicitWidth: parent.width
-                    implicitHeight: 6
-
-                    property alias bar: seekBar
-
-                    background: Rectangle {
-                        x: seekSlider.leftPadding
-                        y: seekSlider.topPadding + seekSlider.availableHeight / 2 - height / 2
-
-                        implicitWidth: seekSlider.width
-                        implicitHeight: seekSlider.height
-
-                        width: seekSlider.availableWidth
-                        height: implicitHeight
-                        radius: 0
-                        color: Styles.fgBase
-
-                        Rectangle {
-                            id: seekBar
-                            width: parent.width * seekSlider.visualPosition
-                            height: parent.height
-                            color: Styles.bgBase
-                            radius: 0
-                        }
-                    }
-
-                    handle: Rectangle {
-                        implicitWidth: 0
-                        implicitHeight: seekSlider.height
-                        color: Styles.fgBase
-                        x: seekSlider.leftPadding
-                            + seekSlider.visualPosition * (seekSlider.availableWidth - width)
-                        y: 0
-                    }
+                    onTick: lyrics.populateLyrics()
                 }
                 
                 Row {

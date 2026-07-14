@@ -160,11 +160,17 @@ Singleton {
         },
         "lyrics": {
             "spacing": 5,
-            "anchors": {
-                "horizontalCenterOffset": 63,
-                "verticalCenterOffset": -45
-            },
-            "inactiveColor": fgSecondary
+            "inactiveColor": fgSecondary,
+            "background": {
+                "anchors": {
+                    "horizontalCenterOffset": 63,
+                    "verticalCenterOffset": -50
+                },
+                "color": Qt.rgba(bgBase.r, bgBase.g, bgBase.b, 0.75),
+                "radius": 0,
+                "visible": true,
+                "height": 96,
+            }
         }
     })
 
@@ -458,7 +464,6 @@ Singleton {
                     "color": fgSecondary,
                     "font": {
                         "family": fontFamily,
-                        "bold": true
                     }
                 },
                 "clear": {

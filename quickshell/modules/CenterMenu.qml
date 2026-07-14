@@ -195,6 +195,7 @@ PopupWindow {
                             id: dateLabel
                             anchors.verticalCenter: parent.verticalCenter
                             horizontalAlignment: Text.AlignHCenter
+                            renderType: Text.NativeRendering
                             width: parent.width - 2 * calendar.buttonWidth - 2 * controlRow.spacing
                             text: Qt.formatDate(new Date(calendar.year, calendar.month, 1), "MMMM yyyy")
                         }
@@ -333,6 +334,7 @@ PopupWindow {
                         BetterText {
                             id: middleHeaderTitle
                             anchors.verticalCenter: parent.verticalCenter
+                            renderType: Text.NativeRendering
                             text: middlePanel.showPrayerTimes
                                 ? "Prayer Times"
                                 : Qt.formatDate(calendar.selectedDate, "dddd MMM d")
@@ -412,6 +414,7 @@ PopupWindow {
 
                         BetterText {
                             id: notifTitle
+                            renderType: Text.NativeRendering
                             text: "Notifications"
                             anchors.verticalCenter: parent.verticalCenter
                         }

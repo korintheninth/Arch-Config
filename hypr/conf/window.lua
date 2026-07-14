@@ -14,7 +14,7 @@ hl.config({
             active_border = var_color5,
             inactive_border = var_color1,
         },
-        layout = "scrolling",
+        layout = "master",
         resize_on_border = true,
     },
 })

@@ -4,6 +4,6 @@
     input-radius: 0px;
     background: @color1;
     primary: @color6;
-    surface: @color1;
+    surface: @color2;
     on-surface: @color6;
 }

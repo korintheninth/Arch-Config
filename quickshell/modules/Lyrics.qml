@@ -2,11 +2,15 @@ import QtQuick
 import "../components"
 import "../services"
 
-Column {
+Item {
     id: lyrics
+    clip: true
+    implicitHeight: 96
+    height: implicitHeight
 
     property var activeLyrics: ["", "", "", ""]
     property real position: 0
+    property int spacing: 5
 
     property alias lr1: lr1
     property alias lr2: lr2
@@ -19,7 +23,7 @@ Column {
             return
         }
         var lyricIndex = 0
-        while (LyricsService.activeLyrics[lyricIndex].timestamp < position && lyricIndex < LyricsService.activeLyrics.length) lyricIndex += 1
+        while (lyricIndex < LyricsService.activeLyrics.length && LyricsService.activeLyrics[lyricIndex].timestamp <= position + 0.15) lyricIndex += 1
         activeLyrics = [
             lyricIndex < 2 ? "" : LyricsService.activeLyrics[lyricIndex - 2].lyric,
             lyricIndex < 1 ? "" : LyricsService.activeLyrics[lyricIndex - 1].lyric,
@@ -29,24 +33,30 @@ Column {
     }
 
     BetterText {
-        id: lr1
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width
-        wrapMode: Text.Wrap
-        horizontalAlignment: Text.AlignHCenter
-        text: lyrics.activeLyrics[0]
-    }
-    BetterText {
         id: lr2
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -parent.height * 0.125
         width: parent.width
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignHCenter
         text: lyrics.activeLyrics[1]
     }
     BetterText {
+        id: lr1
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: lr2.top
+        anchors.bottomMargin: lyrics.spacing
+        width: parent.width
+        wrapMode: Text.Wrap
+        horizontalAlignment: Text.AlignHCenter
+        text: lyrics.activeLyrics[0]
+    }
+    BetterText {
         id: lr3
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: lr2.bottom
+        anchors.topMargin: lyrics.spacing
         width: parent.width
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignHCenter
@@ -55,6 +65,8 @@ Column {
     BetterText {
         id: lr4
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: lr3.bottom
+        anchors.topMargin: lyrics.spacing
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.Wrap

@@ -61,7 +61,7 @@ Rectangle {
     Timer {
         running: media.player && media.player.isPlaying
         repeat: true
-        interval: 1000
+        interval: 500
         onTriggered: if (media.player) media.player.positionChanged()
     }
 

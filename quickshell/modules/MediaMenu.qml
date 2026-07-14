@@ -123,6 +123,7 @@ PopupWindow {
         Styler.apply(nextBtn, Styles.mediaMenu.button)
         Styler.apply(ytmusic, Styles.mediaMenu.ytmusic)
         Styler.apply(lyrics, Styles.mediaMenu.lyrics)
+        Styler.apply(lyricsBg, Styles.mediaMenu.lyrics.background)
         updateStreams()
         LyricsService.updateLyrics()
     }
@@ -252,12 +253,20 @@ PopupWindow {
                 border.color: coverFrame.coverBorderColor
             }
         }
-        
-        Lyrics {
-            id: lyrics
+        Rectangle {
+            id: lyricsBg
             anchors.centerIn: bg
-            width: bg.width - coverFrame.width - coverFrame.anchors.leftMargin - 10
-            position: player ? player.position : 0
+            width: lyrics.width
+            color: "transparent"
+            clip: true
+            
+            Lyrics {
+                id: lyrics
+                anchors.centerIn: parent
+                width: bg.width - coverFrame.width - coverFrame.anchors.leftMargin - 10
+                height: parent.height
+                position: seekSlider.value
+            }
         }
 
         Column {
@@ -273,18 +282,6 @@ PopupWindow {
             }
         }
 
-        Timer {
-            interval: 100
-            running: player && player.isPlaying
-            repeat: true
-            onTriggered: {
-                if (player) {
-                    seekSlider.value = player.position
-                    lyrics.populateLyrics()
-                }
-            }
-        }
-        
         Slider {
             id: volumeSlider
             anchors.left: parent.left
@@ -296,7 +293,7 @@ PopupWindow {
             value: mediaMenu.outputStreams[0] ? mediaMenu.outputStreams[0].audio.volume : 0
 
             property alias bar: volumeBar
-            
+
             onMoved: {
                 for (var n of outputStreams) {
                     n.audio.volume = value
@@ -328,42 +325,12 @@ PopupWindow {
             }
         }
 
-        Slider {
+        MediaSlider {
             id: seekSlider
+            player: mediaMenu.player
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            from: 0
-            to: player ? player.length : 0
-            live: true
-            onMoved: {
-                player.position = value
-            }
-
-            property alias bar: seekBar
-
-            background: Rectangle {
-                x: seekSlider.leftPadding
-                y: seekSlider.topPadding + seekSlider.availableHeight / 2 - height / 2
-
-                width: seekSlider.availableWidth
-                height: seekSlider.implicitHeight
-                radius: 0
-
-                Rectangle {
-                    id: seekBar
-                    width: parent.width * seekSlider.visualPosition
-                    height: parent.height
-                    radius: 0
-                }
-            }
-
-            handle: Rectangle {
-                implicitWidth: 0
-                implicitHeight: seekSlider.height
-                x: seekSlider.leftPadding
-                    + seekSlider.visualPosition * (seekSlider.availableWidth - width)
-                y: 0
-            }
+            onTick: lyrics.populateLyrics()
         }
 
         Row {

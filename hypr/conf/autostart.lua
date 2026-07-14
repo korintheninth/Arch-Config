@@ -21,7 +21,3 @@ end)
 hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/bin/kdeconnectd")
 end)
-
-hl.on("hyprland.start", function()
-    hl.exec_cmd("gromit-mpx")
-end)

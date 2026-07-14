@@ -3,15 +3,16 @@ pragma Singleton
 import Quickshell.Services.Mpris
 import Quickshell
 import QtQuick
+import Quickshell.Io
 
 Singleton {
     id: lyricsFetcher
 
-    // Primary provider is first, fallback is second — swap entries to switch backends
-    readonly property var lyricsProviders: ["musixmatch", "netease"]
+    readonly property var lyricsProviders: ["ytmusic", "musixmatch", "netease"]
 
     property var lyricsMap: new Map()
     property var activeLyrics: []
+    property var trackKey: player.trackName + "|" + player.trackArtist + "|" + player.trackAlbum + "|" + player.length
     property string _lastKey: ""
 
     function isRealPlayer(p) {
@@ -36,14 +37,19 @@ Singleton {
         interval: 500
         repeat: false
         onTriggered: {
+            if (!player.trackTitle || player.trackTitle == ""
+                || !player.trackArtist || player.trackArtist == ""
+                || !player.trackAlbum || player.trackAlbum == ""
+                || !player.length || player.length == 0)
+                return
             fetchLyrics(player.trackTitle, player.trackArtist, player.trackAlbum, player.length)
         }
 
     }
     
     Connections {
-        target: player
-        function onTrackTitleChanged() { debounceTimer.restart() }
+        target: lyricsFetcher
+        function onTrackKeyChanged() { debounceTimer.restart() }
     }
 
     function updateLyrics() {
@@ -53,9 +59,9 @@ Singleton {
     function fetchLyrics(trackName, trackArtist, trackAlbum, trackLength) {
         if (!trackName || trackName == "" || !trackArtist || trackArtist == "") return
         activeLyrics = []
-        var key = trackName + "|" + trackArtist 
+        var key = trackName + "|" + trackArtist + "|" + trackAlbum + "|" + trackLength
         if (key in lyricsMap || key == _lastKey) {
-            parseLyrics(lyricsMap[trackName + "|" + trackArtist])
+            parseLyrics(lyricsMap[key])
             console.log("Succesfully recalled lyrics for:", trackName, trackArtist)
             return
         }
@@ -65,6 +71,9 @@ Singleton {
 
     function fetchFromProvider(provider, trackName, trackArtist, trackAlbum, trackLength) {
         switch (provider) {
+        case "ytmusic":
+            fetchLyricsYTMusic(trackName, trackArtist, trackAlbum, trackLength)
+            break
         case "netease":
             fetchLyricsNetease(trackName, trackArtist, trackAlbum, trackLength)
             break
@@ -109,7 +118,7 @@ Singleton {
                     if (data.result && data.result.songs && data.result.songs.length > 0) {
                         let trackId = data.result.songs[0].id;
                         
-                        fetchNetEaseSubtitles(trackId, trackName, trackArtist, trackAlbum, trackLength);
+                        fetchNetEase(trackId, trackName, trackArtist, trackAlbum, trackLength);
                     } else {
                         providerFallback("netease", "Search returned no matching songs", trackName, trackArtist, trackAlbum, trackLength)
                     }
@@ -123,7 +132,7 @@ Singleton {
         xhr.send(null);
     }
 
-    function fetchNetEaseSubtitles(trackId, trackName, trackArtist, trackAlbum, trackLength) {
+    function fetchNetEase(trackId, trackName, trackArtist, trackAlbum, trackLength) {
         const xhr = new XMLHttpRequest();
         const url = `https://music.163.com/api/song/lyric?id=${trackId}&lv=1&kv=1&tv=-1`;
         
@@ -201,7 +210,7 @@ Singleton {
                     
                     if (trackList && trackList.length > 0) {
                         let trackId = trackList[0].track.track_id
-                        fetchSubtitles(trackId, token, trackName, trackArtist, trackAlbum, trackLength)
+                        fetchMusixmatch(trackId, token, trackName, trackArtist, trackAlbum, trackLength)
                     } else {
                         providerFallback("musixmatch", "Search returned no matching tracks", trackName, trackArtist, trackAlbum, trackLength)
                     }
@@ -215,7 +224,7 @@ Singleton {
         xhr.send(null)
     }
 
-    function fetchSubtitles(trackId, token, trackName, trackArtist, trackAlbum, trackLength) {
+    function fetchMusixmatch(trackId, token, trackName, trackArtist, trackAlbum, trackLength) {
         const xhr = new XMLHttpRequest()
         const params = new URLSearchParams({
             format: "json",
@@ -252,13 +261,60 @@ Singleton {
         xhr.send(null)
     }
 
+    Process {
+        id: lyrics_process
+
+        running: false
+
+        property string pendingName: ""
+        property string pendingArtist: ""
+        property string pendingAlbum: ""
+        property var pendingLength: 0
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const output = text.trim()
+                if (!output) {
+                    providerFallback("ytmusic", "No lyrics returned", lyrics_process.pendingName, lyrics_process.pendingArtist, lyrics_process.pendingAlbum, lyrics_process.pendingLength)
+                    return
+                }
+                const key = lyrics_process.pendingName + "|" + lyrics_process.pendingArtist + "|" + lyrics_process.pendingAlbum + "|" + lyrics_process.pendingLength
+                lyricsMap[key] = output
+                activeLyrics = []
+                parseLyrics(output)
+                console.log("Succesfully added lyrics for:", lyrics_process.pendingName, lyrics_process.pendingArtist)
+            }
+        }
+    }
+
+    function fetchLyricsYTMusic(trackName, trackArtist, trackAlbum, trackLength) {
+        if (!trackName || !trackArtist) return
+
+        lyrics_process.pendingName = trackName
+        lyrics_process.pendingArtist = trackArtist
+        lyrics_process.pendingAlbum = trackAlbum
+        lyrics_process.pendingLength = trackLength
+        lyrics_process.command = [
+            "/home/korin/.config/quickshell/Scripts/venv/bin/python",
+            "/home/korin/.config/quickshell/Scripts/ytlyrics.py",
+            trackName,
+            trackArtist,
+            trackAlbum,
+            trackLength
+        ]
+        lyrics_process.running = true
+    }
+
     function parseLyrics(lyrics) {
         var lines = lyrics.split("\n")
         for (var line of lines) {
             let closeBracketIndex = line.indexOf("]");
+            var timesec = 0;
             var timestr = line.slice(1, closeBracketIndex).trim("")
             var parts = timestr.split(":")
-            var timesec = parseInt(parts[0]) * 60 + parseFloat(parts[1])
+            timesec = parts.length >= 2
+                ? parseInt(parts[0]) * 60 + parseFloat(parts[1])
+                : parseInt(timestr) / 1000
             var body = {
                 timestamp: timesec,
                 lyric: line.slice(closeBracketIndex + 1)
