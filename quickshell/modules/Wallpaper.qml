@@ -94,6 +94,7 @@ Variants {
                 id: clockWidget
                 color: "transparent"
                 radius: 0
+                z: 1
                 anchors.centerIn: mediaControl
                 
                 SystemClock {
@@ -238,7 +239,7 @@ Variants {
                 anchors.rightMargin: 60
                 anchors.topMargin: 60
                 width: mediaControl.width
-                position: mediaControl.player ? mediaControl.player.position : 0
+                position: seekSlider.value
             }
         }
     }

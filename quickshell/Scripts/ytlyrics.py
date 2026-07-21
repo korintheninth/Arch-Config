@@ -1,5 +1,11 @@
 from ytmusicapi import YTMusic
 import sys
+import cutlet
+from pypinyin import pinyin, Style
+import re
+
+katsu = cutlet.Cutlet()
+katsu.use_foreign_spelling = False
 
 yt = YTMusic() 
 
@@ -23,17 +29,37 @@ def get_duration_diff(song):
     
     return abs(total_seconds - float(track_duration))
 
+def to_pinyin(line):
+    converted = pinyin(line, style=Style.TONE)
+    pinyin_line = ' '.join([word[0] for word in converted])
+    return pinyin_line
+
+def to_romaji(line):
+    return katsu.romaji(line)
+
+def detect_lyric_language(line):
+    has_kana = bool(re.search(r'[\u3040-\u309F\u30A0-\u30FF]', line))
+    has_cjk_ideographs = bool(re.search(r'[\u4E00-\u9FFF]', line))
+    
+    if has_kana:
+        return "japanese"
+    elif has_cjk_ideographs and not has_kana:
+        return "chinese"
+    else:
+        return "latin"
+
 matching = [
     song for song in search_results
-    if song['title'].lower() == track_name.lower() and song['album']['name'].lower() == track_album.lower() and any(a['name'].lower() in track_artist.lower() for a in song['artists'])
+    if (track_name.lower() in song['title'].lower() or song['title'].lower() in track_name.lower()) and any(a['name'].lower() in track_artist.lower() for a in song['artists'])
 ]
-
-matching.sort(key=get_duration_diff)
 
 if len(matching) < 1:
     exit()
 
+matching.sort(key=get_duration_diff)
+
 top_song = matching[0]
+
 if get_duration_diff(top_song) > 5:
     exit()
 
@@ -47,9 +73,16 @@ if lyrics_id:
     
     if lyrics_data.get('hasTimestamps'):
         print("[0] (Lyrics by ytmusic)")
+        print(f"[0] ({top_song['title']} - {' & '.join(artist['name'] for artist in top_song['artists'])} - {top_song['album']['name']})")
         for line in lyrics_data['lyrics']:
-            start = getattr(line, 'start_time', '0') 
             text = getattr(line, 'text', '')
+            lang = detect_lyric_language(text)
+            if lang == "japanese":
+                text = to_romaji(text)
+            elif lang == "chinese":
+                text = to_pinyin(text)
+
+            start = getattr(line, 'start_time', '0') 
             
             print(f"[{start}] {text}")
             

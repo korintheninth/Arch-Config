@@ -5,8 +5,6 @@ import "../services"
 Item {
     id: lyrics
     clip: true
-    implicitHeight: 96
-    height: implicitHeight
 
     property var activeLyrics: ["", "", "", ""]
     property real position: 0
@@ -18,17 +16,18 @@ Item {
     property alias lr4: lr4
 
     function populateLyrics() {
-        if (LyricsService.activeLyrics.length <= 0) {
+        var key = LyricsService.trackKey
+        if (!LyricsService.lyricsMap[key] || LyricsService.lyricsMap[key].length <= 0) {
             activeLyrics = ["", "", "", ""]
             return
         }
         var lyricIndex = 0
-        while (lyricIndex < LyricsService.activeLyrics.length && LyricsService.activeLyrics[lyricIndex].timestamp <= position + 0.15) lyricIndex += 1
+        while (lyricIndex < LyricsService.lyricsMap[key].length && LyricsService.lyricsMap[key][lyricIndex].timestamp <= position + 0.15) lyricIndex += 1
         activeLyrics = [
-            lyricIndex < 2 ? "" : LyricsService.activeLyrics[lyricIndex - 2].lyric,
-            lyricIndex < 1 ? "" : LyricsService.activeLyrics[lyricIndex - 1].lyric,
-            lyricIndex >= LyricsService.activeLyrics.length ? "" : LyricsService.activeLyrics[lyricIndex].lyric,
-            lyricIndex + 1 >= LyricsService.activeLyrics.length ? "" : LyricsService.activeLyrics[lyricIndex + 1].lyric
+            lyricIndex < 2 ? "" : LyricsService.lyricsMap[key][lyricIndex - 2].lyric,
+            lyricIndex < 1 ? "" : LyricsService.lyricsMap[key][lyricIndex - 1].lyric,
+            lyricIndex >= LyricsService.lyricsMap[key].length ? "" : LyricsService.lyricsMap[key][lyricIndex].lyric,
+            lyricIndex + 1 >= LyricsService.lyricsMap[key].length ? "" : LyricsService.lyricsMap[key][lyricIndex + 1].lyric
             ]
     }
 

@@ -204,11 +204,13 @@ PopupWindow {
         Cava {
             id: menuCava
             override: true
-            anchors.centerIn: bg
+            anchors.verticalCenter: undefined
+            anchors.bottom: bg.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
 
-            barWidth: (this.width - Styles.mediaMenu.cava.barCount - 2) / Styles.mediaMenu.cava.barCount
             bars.spacing: 1
+            barWidth: (this.width - (Styles.mediaMenu.cava.barCount - 1) * bars.spacing - 1) / Styles.mediaMenu.cava.barCount
             cavaProcess.running: mediaMenu.player && mediaMenu.player.isPlaying
             visible: mediaMenu.player && mediaMenu.player.isPlaying
         }
@@ -274,11 +276,11 @@ PopupWindow {
             anchors.left: seekSlider.left
             BetterText {
                 id: title
-                text: player ? truncate(player.trackTitle, 27) : ""
+                text: player ? truncate(player.trackTitle, 60) : ""
             }
             BetterText {
                 id: artist
-                text: truncate(player?.trackArtist + " - " + player?.trackAlbum, 27)
+                text: truncate(player?.trackArtist + " - " + player?.trackAlbum, 60)
             }
         }
 

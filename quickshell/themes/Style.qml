@@ -85,7 +85,7 @@ Singleton {
         },
         "text": {
             "font": {
-                "family": "Silkscreen",
+                "family": "Pixel Code",
                 "pixelSize": 15,
                 "bold": false
             },
@@ -107,14 +107,14 @@ Singleton {
         },
         "cava": {
             "width": 601,
-            "height": 225,
+            "height": 65,
             "bars": {
                 "anchors": {
                     "bottomMargin": 0
                 }
             },
             "barCount": 70,
-            "barColor": Qt.rgba(fgSecondary.r, fgSecondary.g, fgSecondary.b, 0.4),
+            "barColor": Qt.rgba(fgSecondary.r, fgSecondary.g, fgSecondary.b, 0.8),
             "confPath": "wallpaper.conf"
         },
         "slider": {
@@ -159,6 +159,7 @@ Singleton {
             }
         },
         "lyrics": {
+            "height": 96,
             "spacing": 5,
             "inactiveColor": fgSecondary,
             "background": {
@@ -922,8 +923,9 @@ Singleton {
             },
         },
         "lyrics": {
+            "height": 200,
             "anchors": {
-                "topMargin": 90,
+                "topMargin": 60,
                 "rightMargin": 60
             },
             "text": {

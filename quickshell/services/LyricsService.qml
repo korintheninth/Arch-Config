@@ -11,8 +11,7 @@ Singleton {
     readonly property var lyricsProviders: ["ytmusic", "musixmatch", "netease"]
 
     property var lyricsMap: new Map()
-    property var activeLyrics: []
-    property var trackKey: player.trackName + "|" + player.trackArtist + "|" + player.trackAlbum + "|" + player.length
+    property var trackKey: player.trackTitle + "|" + player.trackArtist + "|" + player.trackAlbum + "|" + player.length
     property string _lastKey: ""
 
     function isRealPlayer(p) {
@@ -58,10 +57,8 @@ Singleton {
 
     function fetchLyrics(trackName, trackArtist, trackAlbum, trackLength) {
         if (!trackName || trackName == "" || !trackArtist || trackArtist == "") return
-        activeLyrics = []
         var key = trackName + "|" + trackArtist + "|" + trackAlbum + "|" + trackLength
         if (key in lyricsMap || key == _lastKey) {
-            parseLyrics(lyricsMap[key])
             console.log("Succesfully recalled lyrics for:", trackName, trackArtist)
             return
         }
@@ -87,7 +84,7 @@ Singleton {
 
     function providerFallback(failedProvider, reason, trackName, trackArtist, trackAlbum, trackLength, detail) {
         const detailSuffix = detail !== undefined && detail !== "" ? ` (${detail})` : ""
-        console.log(`[Lyrics/${failedProvider}] ${reason}${detailSuffix}: "${trackName}" by "${trackArtist}"`)
+        console.log(`[Lyrics/${failedProvider}] ${reason}${detailSuffix}: "${trackName}" by "${trackArtist}" - "${trackAlbum}" - "${trackLength}"`)
         const nextIndex = lyricsProviders.indexOf(failedProvider) + 1
         if (nextIndex < lyricsProviders.length)
             fetchFromProvider(lyricsProviders[nextIndex], trackName, trackArtist, trackAlbum, trackLength)
@@ -154,8 +151,9 @@ Singleton {
                                 providerFallback("netease", "Lyrics empty after stripping Chinese characters", trackName, trackArtist, trackAlbum, trackLength, `trackId ${trackId}`)
                                 return
                             }
-                            lyricsMap[trackName + "|" + trackArtist] = syncedText
-                                parseLyrics(syncedText)
+                            var key = trackName + "|" + trackArtist + "|" + trackAlbum + "|" + trackLength
+                            syncedText = "[0] (Lyrics By NetEase)\n" + syncedText
+                            parseLyrics(syncedText, key)
                             console.log("Succesfully added lyrics for:", trackName, trackArtist)
                         } else {
                             providerFallback("netease", "Lyric response missing lrc.lyric", trackName, trackArtist, trackAlbum, trackLength, `trackId ${trackId}`)
@@ -244,9 +242,10 @@ Singleton {
                     let subs = data.message.body.subtitle_list
                     
                     if (subs && subs.length > 0) {
+                        var key = trackName + "|" + trackArtist + "|" + trackAlbum + "|" + trackLength
                         let syncedText = subs[0].subtitle.subtitle_body
-                        lyricsMap[trackName + "|" + trackArtist] = syncedText
-                        parseLyrics(syncedText)
+                        syncedText = "[0] (Lyrics By Musixmatch)\n" + syncedText
+                        parseLyrics(syncedText, key)
                         console.log("Succesfully added lyrics for:", trackName, trackArtist)
                     } else {
                         providerFallback("musixmatch", "Subtitle response empty", trackName, trackArtist, trackAlbum, trackLength, `trackId ${trackId}`)
@@ -261,51 +260,55 @@ Singleton {
         xhr.send(null)
     }
 
-    Process {
-        id: lyrics_process
+    Component {
+        id: lyricsProcessFactory
 
-        running: false
+        Process {
+            id: dynProcess
+            
+            property string trackName: ""
+            property string trackArtist: ""
+            property string trackAlbum: ""
+            property var trackLength: 0
 
-        property string pendingName: ""
-        property string pendingArtist: ""
-        property string pendingAlbum: ""
-        property var pendingLength: 0
+            command: [
+                "/home/korin/.config/quickshell/Scripts/venv/bin/python",
+                "/home/korin/.config/quickshell/Scripts/ytlyrics.py",
+                trackName,
+                trackArtist,
+                trackAlbum,
+                trackLength
+            ]
 
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const output = text.trim()
-                if (!output) {
-                    providerFallback("ytmusic", "No lyrics returned", lyrics_process.pendingName, lyrics_process.pendingArtist, lyrics_process.pendingAlbum, lyrics_process.pendingLength)
-                    return
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    const output = text.trim()
+                    if (!output) {
+                        providerFallback("ytmusic", "No lyrics returned", dynProcess.trackName, dynProcess.trackArtist, dynProcess.trackAlbum, dynProcess.trackLength)
+                    } else {
+                        const key = dynProcess.trackName + "|" + dynProcess.trackArtist + "|" + dynProcess.trackAlbum + "|" + dynProcess.trackLength
+                        parseLyrics(output, key)
+                    }
+                    dynProcess.destroy()
                 }
-                const key = lyrics_process.pendingName + "|" + lyrics_process.pendingArtist + "|" + lyrics_process.pendingAlbum + "|" + lyrics_process.pendingLength
-                lyricsMap[key] = output
-                activeLyrics = []
-                parseLyrics(output)
-                console.log("Succesfully added lyrics for:", lyrics_process.pendingName, lyrics_process.pendingArtist)
             }
         }
     }
 
     function fetchLyricsYTMusic(trackName, trackArtist, trackAlbum, trackLength) {
-        if (!trackName || !trackArtist) return
+        if (!trackName || !trackArtist || !trackAlbum || !trackLength) return
 
-        lyrics_process.pendingName = trackName
-        lyrics_process.pendingArtist = trackArtist
-        lyrics_process.pendingAlbum = trackAlbum
-        lyrics_process.pendingLength = trackLength
-        lyrics_process.command = [
-            "/home/korin/.config/quickshell/Scripts/venv/bin/python",
-            "/home/korin/.config/quickshell/Scripts/ytlyrics.py",
-            trackName,
-            trackArtist,
-            trackAlbum,
-            trackLength
-        ]
-        lyrics_process.running = true
+        lyricsProcessFactory.createObject(lyricsFetcher, {
+            trackName: trackName,
+            trackArtist: trackArtist,
+            trackAlbum: trackAlbum,
+            trackLength: trackLength,
+            running: true
+        })
     }
 
-    function parseLyrics(lyrics) {
+    function parseLyrics(lyrics, key) {
+        var parsed = []
         var lines = lyrics.split("\n")
         for (var line of lines) {
             let closeBracketIndex = line.indexOf("]");
@@ -319,8 +322,9 @@ Singleton {
                 timestamp: timesec,
                 lyric: line.slice(closeBracketIndex + 1)
             }
-            activeLyrics.push(body)
+            parsed.push(body)
         }
-        return activeLyrics
+        lyricsMap[key] = parsed
+        return parsed
     }
 }

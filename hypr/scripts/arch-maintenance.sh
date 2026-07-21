@@ -11,14 +11,13 @@ fi
 
 echo "Starting routine Arch Linux maintenance..."
 
-# 0. Clean up stuck partial downloads first to prevent fd 7 errors
-echo -e "\n>> Cleaning partial download files..."
-rm -rf /var/cache/pacman/pkg/download-*
+# 0. Clean up STALE partial downloads (older than 60 minutes) to prevent race conditions
+echo -e "\n>> Cleaning stale partial download files..."
+find /var/cache/pacman/pkg/ -name 'download-*' -type f -mmin +60 -delete
 
-# 1. Clean the pacman cache (keeping the 2 most recent versions)
 echo -e "\n>> Cleaning pacman cache..."
 if command -v paccache &> /dev/null; then
-    paccache -rk2
+    paccache -rk0
 else
     echo "paccache not found. (Install pacman-contrib for better cache management)."
     pacman -Sc --noconfirm
