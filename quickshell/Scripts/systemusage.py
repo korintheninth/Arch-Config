@@ -53,11 +53,11 @@ for pid, stats2 in p_stats_2.items():
     if pid in p_stats_1 and sys_delta > 0:
         proc_delta = stats2['cpu_time'] - p_stats_1[pid]['cpu_time']
         cpu_pct = (proc_delta / sys_delta) * 100
-        cpu_list.append((stats2['name'].replace(" ", "_"), pid, round(cpu_pct, 1)))
-    mem_list.append((stats2['name'].replace(" ", "_"), pid, round(stats2['rss'], 1)))
+        cpu_list.append((stats2['name'].replace(" ", "_"), round(cpu_pct, 1)))
+    mem_list.append((stats2['name'].replace(" ", "_"), round(stats2['rss'], 1)))
 
-for item in sorted(cpu_list, key=lambda x: x[2], reverse=True)[:3]:
-    print(f"{item[0]} {item[1]} {item[2]}%")
+for item in sorted(cpu_list, key=lambda x: x[1], reverse=True)[:3]:
+    print(f"{item[0]} {item[1]}%")
 
-for item in sorted(mem_list, key=lambda x: x[2], reverse=True)[:3]:
-    print(f"{item[0]} {item[1]} {item[2]}M")
+for item in sorted(mem_list, key=lambda x: x[1], reverse=True)[:3]:
+    print(f"{item[0]} {item[1]}M")

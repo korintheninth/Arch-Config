@@ -1,8 +1,7 @@
 // components/StyledToolTip.qml
 import QtQuick
-import Quickshell // Required for PopupWindow and Edges
+import Quickshell
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 PopupWindow {
     id: tooltip
@@ -12,9 +11,9 @@ PopupWindow {
     property bool show: false
     property var styleOverride: null
 
-    property int delay: 400
-    property int timeout: 5000
-    
+    property int delay: styleOverride?.delay ?? Styles.tooltip.delay
+    property int timeout: styleOverride?.timeout ?? Styles.tooltip.timeout
+
     property string text: ""
 
     property alias background: backgroundRect
@@ -22,14 +21,14 @@ PopupWindow {
 
     visible: revealed
     property bool revealed: false
-    
+
     implicitWidth: backgroundRect.width
     implicitHeight: backgroundRect.height
-    
+
     anchor.item: anchorTarget
     anchor.edges: Edges.Bottom
     anchor.gravity: Edges.Bottom
-    anchor.margins.top: 15
+    anchor.margins.top: styleOverride?.anchor?.margins?.top ?? Styles.tooltip.anchor.margins.top
 
     Timer {
         id: showTimer
@@ -65,24 +64,19 @@ PopupWindow {
 
         width: label.width + 20
         height: label.height + 12
-        
+        color: styleOverride?.background?.color ?? Styles.tooltip.background.color
+        border.width: styleOverride?.background?.border?.width ?? Styles.tooltip.background.border.width
+        border.color: styleOverride?.background?.border?.color ?? Styles.tooltip.background.border.color
+
         BetterText {
             id: label
             text: tooltip.text
             anchors.centerIn: parent
-            
+            color: styleOverride?.label?.color ?? Styles.tooltip.label.color
+            font.family: styleOverride?.label?.font?.family ?? Styles.tooltip.label.font.family
+
             wrapMode: Text.Wrap
         }
-    }
-
-    Component.onCompleted: {
-        if (typeof Styles !== "undefined" && Styles.tooltip) {
-            Styler.apply(tooltip, Styles.tooltip)
-            Styler.apply(backgroundRect, Styles.tooltip.background)
-            Styler.apply(label, Styles.tooltip.label)
-        }
-        if (styleOverride)
-            Styler.apply(tooltip, styleOverride)
     }
 
     Connections {

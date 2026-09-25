@@ -2,13 +2,14 @@ import QtQuick
 import Quickshell.Services.Pipewire
 import Quickshell
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../components"
 
 Rectangle {
     id: sound
 
     height: parent.height
+    color: Styles.sound.color
+    radius: Styles.sound.radius
 
     property alias text: row.valueLabel
 
@@ -31,10 +32,10 @@ Rectangle {
 
     function iconAt(level) {
         if (muted)
-            return Styles.sound.mutedIcon
+            return Styles.sound.icon.muted
         const icons = isBluetooth
-            ? Styles.sound.bluetoothIcons
-            : Styles.sound.wiredIcons
+            ? Styles.sound.icon.bluetooth
+            : Styles.sound.icon.wired
         if (!icons || icons.length === 0)
             return ""
         const index = Math.min(
@@ -44,18 +45,19 @@ Rectangle {
         return icons[index]
     }
 
-    Component.onCompleted: {
-        Styler.apply(sound, Styles.sound)
-        Styler.apply(row.iconLabel, Styles.sound.icon)
-        Styler.apply(row.valueLabel, Styles.sound.text)
-    }
-
     IconValueRow {
         id: row
         anchors.centerIn: parent
 
         iconLabel.text: sound.iconAt(sound.pct)
+        iconLabel.color: Styles.sound.icon.color
+        iconLabel.font.family: Styles.sound.icon.font.family
+        iconLabel.font.pixelSize: Styles.sound.icon.font.pixelSize
+        iconLabel.font.bold: Styles.sound.icon.font.bold
         valueLabel.text: sound.pct + "%"
+        valueLabel.color: Styles.sound.text.color
+        valueLabel.font.family: Styles.sound.text.font.family
+        valueLabel.font.bold: Styles.sound.text.font.bold
     }
 
     SoundMenu {

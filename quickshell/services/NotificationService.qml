@@ -7,7 +7,7 @@ import QtQuick
 Singleton {
     id: notificationService
 
-    readonly property var list: server.trackedNotifications
+    readonly property alias list: server.trackedNotifications
     readonly property int count: list.values.length
     property var popups: []
 

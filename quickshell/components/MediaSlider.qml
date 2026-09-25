@@ -1,45 +1,37 @@
 import QtQuick
 import QtQuick.Controls
+import "../services"
 
 Slider {
     id: slider
 
-    property var player: null
     property alias bar: fillBar
-    property var lastPos: 0
-    property var lastTime: 0
+    property color trackColor: "white"
+    property color fillColor: "black"
+    property color handleColor: "white"
+    property real radius: 0
 
     signal tick()
 
     live: true
     from: 0
-    to: player ? player.length : 0
+    to: PlayerService.length
 
-    onMoved: {
-        if (player) {
-            player.position = value
-            lastPos = value
-            lastTime = Date.now()
-        }
+    Binding {
+        target: slider
+        property: "value"
+        value: PlayerService.position
+        when: !slider.pressed
     }
 
-    Timer {
-        interval: 100
-        running: slider.player && slider.player.isPlaying
-        repeat: true
-        onTriggered: {
-            if (!slider.player)
-                return
+    onMoved: {
+        PlayerService.seek(value)
+        tick()
+    }
 
-            var pos = slider.player.position
-            var deltaTime = (Date.now() - slider.lastTime) / 1000
-            if (pos > slider.lastPos + deltaTime || Math.abs(pos - (slider.lastPos + deltaTime)) > 1) {
-                slider.value = slider.player.position
-                slider.lastPos = slider.player.position
-                slider.lastTime = Date.now()
-            } else if (slider.player.isPlaying) {
-                slider.value = slider.lastPos + deltaTime
-            }
+    Connections {
+        target: PlayerService
+        function onTick() {
             slider.tick()
         }
     }
@@ -50,19 +42,21 @@ Slider {
 
         width: slider.availableWidth
         height: slider.implicitHeight
-        radius: 0
+        radius: slider.radius
+        color: slider.trackColor
 
-        Rectangle {
+        SliderFill {
             id: fillBar
-            width: parent.width * slider.visualPosition
-            height: parent.height
-            radius: 0
+            position: slider.visualPosition
+            radius: slider.radius
+            color: slider.fillColor
         }
     }
 
     handle: Rectangle {
         implicitWidth: 0
         implicitHeight: slider.height
+        color: slider.handleColor
         x: slider.leftPadding
             + slider.visualPosition * (slider.availableWidth - width)
         y: 0

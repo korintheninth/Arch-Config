@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import "../themes"
+import "../components"
 
 Singleton {
     id: todoistService
@@ -22,6 +23,7 @@ Singleton {
 
     property bool _refreshing: false
     property bool _refreshQueued: false
+    property bool _ready: false
 
     readonly property string token: {
         const direct = apiToken.trim()
@@ -46,7 +48,17 @@ Singleton {
         path: todoistService.tokenPath
         watchChanges: true
         onLoaded: todoistService.refreshAll()
-        onFileChanged: todoistService.refreshAll()
+        onFileChanged: reload()
+    }
+
+    CurlRequest {
+        id: getReq
+        name: "Todoist"
+    }
+
+    CurlRequest {
+        id: postReq
+        name: "Todoist"
     }
 
     Timer {
@@ -108,6 +120,52 @@ Singleton {
         if (typeof value === "string")
             return value
         return Qt.formatDate(value, "yyyy-MM-dd")
+    }
+
+    function plainDateKey(value) {
+        return dateKey(value).slice(0, 10)
+    }
+
+    function daysBetween(fromValue, toValue) {
+        const from = new Date(plainDateKey(fromValue) + "T00:00:00")
+        const to = new Date(plainDateKey(toValue) + "T00:00:00")
+        return Math.round((to.getTime() - from.getTime()) / 86400000)
+    }
+
+    function upcomingNonRecurring(days) {
+        const window = days > 0 ? days : 10
+        const todayKey = Qt.formatDate(new Date(), "yyyy-MM-dd")
+        const end = new Date()
+        end.setDate(end.getDate() + window)
+        const endKey = Qt.formatDate(end, "yyyy-MM-dd")
+        const result = []
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i]
+            const due = task.due
+            if (!due || !due.date || due.is_recurring)
+                continue
+
+            const dueDate = plainDateKey(due.date)
+            if (!isPlainDateString(dueDate))
+                continue
+            if (dueDate <= todayKey || dueDate > endKey)
+                continue
+
+            result.push(task)
+        }
+
+        result.sort(function(a, b) {
+            const da = plainDateKey(a.due.date)
+            const db = plainDateKey(b.due.date)
+            if (da < db)
+                return -1
+            if (da > db)
+                return 1
+            return (b.priority || 1) - (a.priority || 1)
+        })
+
+        return result
     }
 
     function buildDayPriorities(taskList) {
@@ -188,35 +246,35 @@ Singleton {
             return
         }
 
-        const xhr = new XMLHttpRequest()
-        xhr.open(method, "https://api.todoist.com/api/v1" + path)
-        xhr.setRequestHeader("Authorization", "Bearer " + authToken)
-        if (body !== undefined)
-            xhr.setRequestHeader("Content-Type", "application/json")
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE)
-                return
-
-            let data = null
-            if (xhr.responseText) {
-                try {
-                    data = JSON.parse(xhr.responseText)
-                } catch (e) {
-                    data = null
-                }
-            }
-
-            const ok = xhr.status >= 200 && xhr.status < 300
-            callback(data, xhr.status, ok ? "" : (xhr.status ? ("Todoist HTTP " + xhr.status) : "Todoist request failed"))
+        const opts = {
+            method: method,
+            url: "https://api.todoist.com/api/v1" + path,
+            headers: { "Authorization": "Bearer " + authToken },
+            callback: callback
         }
+        if (body !== undefined) {
+            opts.headers["Content-Type"] = "application/json"
+            opts.body = body
+        }
+        (method === "GET" ? getReq : postReq).request(opts)
+    }
 
-        xhr.send(body !== undefined ? JSON.stringify(body) : null)
+    function finishRefresh() {
+        _refreshing = false
+        _ready = true
+        loading = false
+
+        if (_refreshQueued) {
+            _refreshQueued = false
+            refreshAll()
+        }
     }
 
     function refreshAll() {
         const authToken = readToken()
         if (!authToken) {
+            _refreshing = false
+            _refreshQueued = false
             if (tokenFile.loaded)
                 error = "Missing Todoist API token"
             setTaskData([])
@@ -230,22 +288,13 @@ Singleton {
         }
 
         _refreshing = true
-        loading = true
+        if (!_ready)
+            loading = true
         error = ""
 
         const collected = []
         const fetchMutationVersion = mutationVersion
         let cursor = ""
-
-        function finishRefresh() {
-            _refreshing = false
-            loading = false
-
-            if (_refreshQueued) {
-                _refreshQueued = false
-                refreshAll()
-            }
-        }
 
         function fetchPage() {
             let url = "/tasks?limit=200"
@@ -254,7 +303,7 @@ Singleton {
 
             apiRequest("GET", url, undefined, function(data, status, err) {
                 if (status !== 200) {
-                    error = err
+                    error = err || "Todoist request failed"
                     finishRefresh()
                     return
                 }

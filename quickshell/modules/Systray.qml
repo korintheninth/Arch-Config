@@ -3,13 +3,13 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../components"
 
 Row {
     id: systray
 
     property int barHeight: 0
+    spacing: Styles.systray.spacing
 
     readonly property var style: Styles.systray
     readonly property int iconWidth: {
@@ -21,8 +21,6 @@ Row {
         return barHeight > 0 ? Math.min(themed, barHeight) : themed
     }
     height: barHeight > 0 ? barHeight : childrenRect.height
-
-    Component.onCompleted: Styler.apply(systray, Styles.systray)
 
     StyledTrayMenu {
         id: trayMenu

@@ -1,0 +1,48 @@
+{
+  "selected": "/home/korin/wallpapers/catppuccin-wallpapers/os/arch-black-4k_bw.png",
+  "manager": "auto",
+  "filters": {
+    "colors": 0,
+    "sat": 100,
+    "bri": 100,
+    "con": 100,
+    "hue": 0,
+    "gray": false,
+    "bw": false,
+    "invert": false,
+    "sepia": false,
+    "dither": false,
+    "tint": "none",
+    "tintAmount": 30
+  },
+  "awww": {
+    "transition": "simple",
+    "step": 90,
+    "duration": 3,
+    "fps": 30,
+    "angle": 45,
+    "pos": "center",
+    "bezier": "default",
+    "wave": 20
+  },
+  "mpv": {
+    "volume": 50,
+    "mute": true
+  },
+  "wallust": {
+    "backend": "wal",
+    "colorSpace": "lch",
+    "palette": "harddark",
+    "fallback": "interpolation",
+    "contrast": true,
+    "satOn": false,
+    "sat": 70,
+    "thrOn": false,
+    "thr": 0
+  },
+  "keyboard": {
+    "mode": "color",
+    "color": "color1"
+  },
+  "settingsTab": "settings"
+}

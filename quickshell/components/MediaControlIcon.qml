@@ -31,7 +31,9 @@ Item {
             const r = Math.min(root.cornerRadius, w * 0.12, h * 0.12)
 
             if (root.iconType === "play") {
-                drawRoundedTriangle(ctx, w * 0.3, h * 0.18, w * 0.78, h * 0.5, w * 0.3, h * 0.82, r)
+                // Shifted right so the triangle's visual centroid sits on the
+                // circle center (a left-weighted play glyph otherwise looks off).
+                drawRoundedTriangle(ctx, w * 0.36, h * 0.18, w * 0.84, h * 0.5, w * 0.36, h * 0.82, r)
             } else if (root.iconType === "pause") {
                 const barW = w * 0.16
                 const gap = w * 0.14

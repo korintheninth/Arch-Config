@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 
 Item {
@@ -11,18 +10,31 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     implicitWidth: bars.implicitWidth
 
-    Component.onCompleted: Styler.apply(bars, Styles.hwState)
-    
     Row {
         id: bars
         height: parent.height
+        spacing: Styles.hwState.spacing
+        leftPadding: Styles.hwState.leftPadding
+        rightPadding: Styles.hwState.rightPadding
 
-        property int barWidth: 5
+        property int barWidth: Styles.hwState.barWidth
         property int cpuUsage: 0
         property int memUsage: 0
         property int diskUsage: 0
         property int gpuUsage: 0
         property int gpuTemp: 0
+        property int historyMax: Styles.hwMenu.graph.maxSamples
+        property var cpuHistory: []
+        property var gpuHistory: []
+        property var memHistory: []
+
+        function pushHistory(hist, value) {
+            var next = hist.slice()
+            next.push(Math.max(0, Math.min(100, Number(value) || 0)))
+            if (next.length > historyMax)
+                next.splice(0, next.length - historyMax)
+            return next
+        }
 
         function barColor(usage) {
             const s = Styles.hwState
@@ -94,6 +106,7 @@ Item {
                     bars.memUsage = totalMem > 0
                         ? Math.round((usedMem / totalMem) * 100)
                         : 0
+                    bars.memHistory = bars.pushHistory(bars.memHistory, bars.memUsage)
                 }
             }
         }
@@ -116,6 +129,7 @@ Item {
                         var idled = idle - bars.prevIdle
                         var cpu_percent = (totald - idled) * 100 / totald
                         bars.cpuUsage = Math.round(cpu_percent)
+                        bars.cpuHistory = bars.pushHistory(bars.cpuHistory, bars.cpuUsage)
                     }
                     bars.prevIdle = idle
                     bars.prevTotal = idle + nonIdle
@@ -146,6 +160,7 @@ Item {
                     var output = text.trim().split(", ")
                     bars.gpuUsage = parseInt(output[0]) || 0
                     bars.gpuTemp = parseInt(output[1]) || 0
+                    bars.gpuHistory = bars.pushHistory(bars.gpuHistory, bars.gpuUsage)
                 }
             }
         }
@@ -182,6 +197,9 @@ Item {
         gpuTemp: bars.gpuTemp
         memUsage: bars.memUsage
         diskUsage: bars.diskUsage
+        cpuHistory: bars.cpuHistory
+        gpuHistory: bars.gpuHistory
+        memHistory: bars.memHistory
     }
     
     MouseArea {

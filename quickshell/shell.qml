@@ -4,6 +4,7 @@
 import Quickshell
 import QtQuick
 import "modules"
+import "themes"
 
 ShellRoot {
     id: root

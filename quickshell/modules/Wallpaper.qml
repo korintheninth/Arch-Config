@@ -1,13 +1,11 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import QtQuick.Controls
-import Quickshell.Services.Mpris
-import Quickshell.Services.Pipewire
 import "../components"
 import "../services"
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 
 
@@ -27,33 +25,6 @@ Variants {
                 right: true
             }
 
-            Component.onCompleted: {
-                Styler.apply(tasksRegion, Styles.wallpaper.tasks)
-                Styler.apply(tasksHeader, Styles.wallpaper.tasks.header)
-                Styler.apply(todoistTasks.anchors, Styles.wallpaper.tasks.todoist.anchors)
-                Styler.apply(clockWidget, Styles.wallpaper.clock)
-                Styler.apply(clockHour, Styles.wallpaper.clock.text)
-                Styler.apply(dot, Styles.wallpaper.clock.text)
-                Styler.apply(clockMinute, Styles.wallpaper.clock.text)
-                Styler.apply(mediaControl, Styles.wallpaper.media)
-                Styler.apply(wallpaperCava, Styles.wallpaper.media.cava)
-                Styler.apply(wallpaperTitle, Styles.wallpaper.media.text)
-                Styler.apply(wallpaperArtist, Styles.wallpaper.media.text)
-                Styler.apply(lyrics, Styles.wallpaper.lyrics)
-                Styler.apply(lyrics.lr1, Styles.wallpaper.lyrics.text)
-                Styler.apply(lyrics.lr2, Styles.wallpaper.lyrics.text)
-                Styler.apply(lyrics.lr3, Styles.wallpaper.lyrics.text)
-                Styler.apply(lyrics.lr4, Styles.wallpaper.lyrics.text)
-                Styler.apply(lyrics.lr1, { color: Styles.wallpaper.lyrics.inactiveColor })
-                Styler.apply(lyrics.lr3, { color: Styles.wallpaper.lyrics.inactiveColor })
-                Styler.apply(lyrics.lr4, { color: Styles.wallpaper.lyrics.inactiveColor })
-                Styler.apply(seekSlider, Styles.wallpaper.media.slider)
-                Styler.apply(seekSlider, Styles.wallpaper.media.seekSlider)
-                Styler.apply(prevBtn, Styles.wallpaper.media.button)
-                Styler.apply(playBtn, Styles.wallpaper.media.button)
-                Styler.apply(nextBtn, Styles.wallpaper.media.button)
-            }
-
             aboveWindows: false 
             WlrLayershell.layer: WlrLayer.Bottom 
             
@@ -65,26 +36,34 @@ Variants {
             }
             Rectangle {
                 id: tasksRegion
-                property int widthPadding: 20
-                property int heightPadding: 80
+                property int widthPadding: Styles.wallpaper.tasks.widthPadding
+                property int heightPadding: Styles.wallpaper.tasks.heightPadding
                 width: todoistTasks.width + widthPadding
                 height: todoistTasks.height + heightPadding
+                color: Styles.wallpaper.tasks.color
+                radius: Styles.wallpaper.tasks.radius
+                border.width: Styles.wallpaper.tasks.border.width
+                border.color: Styles.wallpaper.tasks.border.color
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.topMargin: 50
-                anchors.leftMargin: 50
-                radius: 10
+                anchors.topMargin: Styles.wallpaper.tasks.anchors.topMargin
+                anchors.leftMargin: Styles.wallpaper.tasks.anchors.leftMargin
                 BetterText {
                     id: tasksHeader
-                    text: "Today's Tasks:"
+                    text: Styles.wallpaper.tasks.header.text
+                    color: Styles.wallpaper.tasks.header.color
+                    font.family: Styles.wallpaper.tasks.header.font.family
+                    font.pixelSize: Styles.wallpaper.tasks.header.font.pixelSize
+                    font.bold: Styles.wallpaper.tasks.header.font.bold
                     anchors.top: parent.top
                     anchors.left: parent.left
-                    anchors.topMargin: 20
-                    anchors.leftMargin: 25
+                    anchors.topMargin: Styles.wallpaper.tasks.header.anchors.topMargin
+                    anchors.leftMargin: Styles.wallpaper.tasks.header.anchors.leftMargin
                 }
                 Todoist {
                     id: todoistTasks
                     anchors.centerIn: parent
+                    anchors.verticalCenterOffset: Styles.wallpaper.tasks.todoist.anchors.verticalCenterOffset
                     styleOverride: Styles.wallpaper.tasks.todoist.styleOverride
                     date: Date.today
                 }
@@ -92,102 +71,131 @@ Variants {
             
             Rectangle {
                 id: clockWidget
-                color: "transparent"
-                radius: 0
+                color: Styles.wallpaper.clock.color
+                radius: Styles.wallpaper.clock.radius
                 z: 1
                 anchors.centerIn: mediaControl
+                implicitWidth: clockRow.implicitWidth
+                implicitHeight: clockRow.implicitHeight
+
+                layer.enabled: true
+                layer.smooth: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: Styles.wallpaper.clock.shadow.color
+                    shadowOpacity: Styles.wallpaper.clock.shadow.opacity
+                    shadowBlur: Styles.wallpaper.clock.shadow.blur
+                    shadowHorizontalOffset: Styles.wallpaper.clock.shadow.horizontalOffset
+                    shadowVerticalOffset: Styles.wallpaper.clock.shadow.verticalOffset
+                }
                 
                 SystemClock {
                     id: clock
                     precision: SystemClock.Minutes
                 }
-        
-                BetterText {
-                    id: clockHour
-                    anchors.right: dot.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Qt.formatDateTime(clock.date, "hh")
-                }
-                BetterText {
-                    id: dot
-                    anchors.centerIn: parent
-                    text: ":"
-                }
-                BetterText {
-                    id: clockMinute
-                    anchors.left: dot.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Qt.formatDateTime(clock.date, "mm")
+
+                Row {
+                    id: clockRow
+
+                    BetterText {
+                        id: clockHour
+                        color: Styles.wallpaper.clock.text.color
+                        font.family: Styles.wallpaper.clock.text.font.family
+                        font.pixelSize: Styles.wallpaper.clock.text.font.pixelSize
+                        font.bold: Styles.wallpaper.clock.text.font.bold
+                        text: Qt.formatDateTime(clock.date, "hh")
+                    }
+                    BetterText {
+                        id: dot
+                        color: Styles.wallpaper.clock.text.color
+                        font.family: Styles.wallpaper.clock.text.font.family
+                        font.pixelSize: Styles.wallpaper.clock.text.font.pixelSize
+                        font.bold: Styles.wallpaper.clock.text.font.bold
+                        text: ":"
+                    }
+                    BetterText {
+                        id: clockMinute
+                        color: Styles.wallpaper.clock.text.color
+                        font.family: Styles.wallpaper.clock.text.font.family
+                        font.pixelSize: Styles.wallpaper.clock.text.font.pixelSize
+                        font.bold: Styles.wallpaper.clock.text.font.bold
+                        text: Qt.formatDateTime(clock.date, "mm")
+                    }
                 }
 
             }
 
             Rectangle {
                 id: mediaControl
-                color: "transparent"
-                width: 800
-                height: 300
-                property int controlsSpacing: 20
-                property int controlsBottomOffset: 35
-                property int titleMaxLength: 75
-                property int artistMaxLength: 75
+                color: Styles.wallpaper.media.color
+                width: Styles.wallpaper.media.width
+                height: Styles.wallpaper.media.height
+                property int controlsSpacing: Styles.wallpaper.media.controls.spacing
+                property int controlsBottomOffset: Styles.wallpaper.media.controls.bottomOffset
+                property int titleMaxLength: Styles.wallpaper.media.titleMaxLength
+                property int artistMaxLength: Styles.wallpaper.media.artistMaxLength
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                anchors.bottomMargin: 60
-                anchors.rightMargin: 60
+                anchors.bottomMargin: Styles.wallpaper.media.anchors.bottomMargin
+                anchors.rightMargin: Styles.wallpaper.media.anchors.rightMargin
                 
                 function truncate(str, max) {
                     if (!str || max <= 0) return str ?? ""
                     return str.length > max ? str.slice(0, max - 1) + "…" : str
                 }
 
-                function isRealPlayer(p) {
-                    const entry = (p?.desktopEntry ?? "").toLowerCase()
-                    const identity = (p?.identity ?? "").toLowerCase()
-                    return p && (entry === "spotify"
-                    || identity.includes("youtube-music")
-                    || identity.includes("mixtapes"))
-                }
-
-                property MprisPlayer player: {
-                    const players = Mpris.players.values
-                    for (const p of players)
-                        if (p.isPlaying && isRealPlayer(p)) return p
-                    for (const p of players)
-                        if (isRealPlayer(p)) return p
-                    return null
-                }
-
                 Cava {
                     id: wallpaperCava
-                    override: true
                     anchors.fill: parent
-                    property int barCount: 70
-                    barWidth: (mediaControl.width - (barCount - 1)) / barCount
-                    confPath: "wallpaper.conf"
-                    barColor: Qt.rgba(Styles.bgSecondary.r, Styles.bgSecondary.g, Styles.bgSecondary.b, 0.6)
-                    visible: mediaControl.player && mediaControl.player.isPlaying
-                    cavaProcess.running: mediaControl.player && mediaControl.player.isPlaying
+                    anchors.leftMargin: 0
+                    bars.anchors.bottomMargin: 0
+                    bars.spacing: Styles.wallpaper.media.cava.bars.spacing
+                    barCount: Styles.wallpaper.media.cava.barCount
+                    barWidth: (mediaControl.width - (barCount - 1) * bars.spacing) / barCount
+                    barColor: Styles.wallpaper.media.cava.barColor
+                    visible: PlayerService.active
+                    running: PlayerService.active
                 }
+
+                /*
+                Oscilloscope {
+                    id: wallpaperOscilloscope
+                    anchors.fill: parent
+                    visible: PlayerService.active
+                    running: visible && modelData === Quickshell.screens[0]
+                }
+                */
 
                 Column {
                     anchors.top: parent.bottom
                     BetterText {
                         id: wallpaperTitle
-                        text: mediaControl.player ? mediaControl.truncate(mediaControl.player.trackTitle, mediaControl.titleMaxLength) : ""
+                        color: Styles.wallpaper.media.text.color
+                        font.family: Styles.wallpaper.media.text.font.family
+                        font.pixelSize: Styles.wallpaper.media.text.font.pixelSize
+                        font.bold: Styles.wallpaper.media.text.font.bold
+                        text: PlayerService.active ? mediaControl.truncate(PlayerService.trackTitle, mediaControl.titleMaxLength) : ""
                     }
                     BetterText {
                         id: wallpaperArtist
-                        text: mediaControl.truncate(mediaControl.player?.trackArtist + " - " + mediaControl.player?.trackAlbum, mediaControl.artistMaxLength)
+                        color: Styles.wallpaper.media.text.color
+                        font.family: Styles.wallpaper.media.text.font.family
+                        font.pixelSize: Styles.wallpaper.media.text.font.pixelSize
+                        font.bold: Styles.wallpaper.media.text.font.bold
+                        text: mediaControl.truncate(PlayerService.trackArtist + " - " + PlayerService.trackAlbum, mediaControl.artistMaxLength)
                     }
                 }
                 
                 MediaSlider {
                     id: seekSlider
-                    player: mediaControl.player
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
                     implicitWidth: parent.width
+                    implicitHeight: Styles.wallpaper.media.seekSlider.implicitHeight
+                    trackColor: Styles.wallpaper.media.slider.background.color
+                    fillColor: Styles.wallpaper.media.slider.bar.color
+                    handleColor: Styles.wallpaper.media.slider.handle.color
+                    radius: Styles.wallpaper.media.slider.radius
                     onTick: lyrics.populateLyrics()
                 }
                 
@@ -201,46 +209,100 @@ Variants {
                     MediaMenuButton {
                         id: prevBtn
                         iconType: "prev"
-                        enabled: mediaControl.player !== null
-                        onClicked: {
-                            if (mediaControl.player)
-                                mediaControl.player.previous()
-                        }
+                        size: Styles.wallpaper.media.button.size
+                        radius: Styles.wallpaper.media.button.radius
+                        normalColor: Styles.wallpaper.media.button.normalColor
+                        hoverColor: Styles.wallpaper.media.button.hoverColor
+                        pressedColor: Styles.wallpaper.media.button.pressedColor
+                        iconSize: Styles.wallpaper.media.button.iconSize
+                        iconColor: Styles.wallpaper.media.button.iconColor
+                        iconHoverColor: Styles.wallpaper.media.button.iconHoverColor
+                        iconPressedColor: Styles.wallpaper.media.button.iconPressedColor
+                        shadow: Styles.wallpaper.media.button.shadow
+                        enabled: PlayerService.active
+                        onClicked: PlayerService.previous()
                     }
                     MediaMenuButton {
                         id: playBtn
-                        iconType: mediaControl.player?.isPlaying ? "pause" : "play"
-                        enabled: mediaControl.player !== null
-                        onClicked: {
-                            const p = mediaControl.player
-                            if (!p)
-                                return
-                            if (p.isPlaying && p.canPause)
-                                p.pause()
-                            else if (p.canPlay)
-                                p.play()
-                        }
+                        iconType: PlayerService.isPlaying ? "pause" : "play"
+                        size: Styles.wallpaper.media.button.size
+                        radius: Styles.wallpaper.media.button.radius
+                        normalColor: Styles.wallpaper.media.button.normalColor
+                        hoverColor: Styles.wallpaper.media.button.hoverColor
+                        pressedColor: Styles.wallpaper.media.button.pressedColor
+                        iconSize: Styles.wallpaper.media.button.iconSize
+                        iconColor: Styles.wallpaper.media.button.iconColor
+                        iconHoverColor: Styles.wallpaper.media.button.iconHoverColor
+                        iconPressedColor: Styles.wallpaper.media.button.iconPressedColor
+                        shadow: Styles.wallpaper.media.button.shadow
+                        enabled: PlayerService.active
+                        onClicked: PlayerService.togglePlayPause()
                     }
                     MediaMenuButton {
                         id: nextBtn
                         iconType: "next"
-                        enabled: mediaControl.player !== null
-                        onClicked: {
-                            if (mediaControl.player)
-                                mediaControl.player.next()
-                        }
+                        size: Styles.wallpaper.media.button.size
+                        radius: Styles.wallpaper.media.button.radius
+                        normalColor: Styles.wallpaper.media.button.normalColor
+                        hoverColor: Styles.wallpaper.media.button.hoverColor
+                        pressedColor: Styles.wallpaper.media.button.pressedColor
+                        iconSize: Styles.wallpaper.media.button.iconSize
+                        iconColor: Styles.wallpaper.media.button.iconColor
+                        iconHoverColor: Styles.wallpaper.media.button.iconHoverColor
+                        iconPressedColor: Styles.wallpaper.media.button.iconPressedColor
+                        shadow: Styles.wallpaper.media.button.shadow
+                        enabled: PlayerService.active
+                        onClicked: PlayerService.next()
                     }
                 }
             }
             Lyrics {
                 id: lyrics
+                visible: PlayerService.active
                 anchors.top: parent.top
                 anchors.right: parent.right
-                anchors.rightMargin: 60
-                anchors.topMargin: 60
                 width: mediaControl.width
-                position: seekSlider.value
+                height: Styles.wallpaper.lyrics.height
+                padding: Styles.wallpaper.lyrics.padding
+                inactiveColor: Styles.wallpaper.lyrics.inactiveColor
+                anchors.topMargin: Styles.wallpaper.lyrics.anchors.topMargin
+                anchors.rightMargin: Styles.wallpaper.lyrics.anchors.rightMargin
+                background.color: Styles.wallpaper.lyrics.background.color
+                background.radius: Styles.wallpaper.lyrics.background.radius
+                background.visible: Styles.wallpaper.lyrics.background.visible
+                background.opacity: Styles.wallpaper.lyrics.background.opacity
+                background.border.width: Styles.wallpaper.lyrics.background.border.width
+                background.border.color: Styles.wallpaper.lyrics.background.border.color
+                lr1.font.family: Styles.wallpaper.lyrics.text.font.family
+                lr1.font.pixelSize: Styles.wallpaper.lyrics.text.font.pixelSize
+                lr1.font.bold: Styles.wallpaper.lyrics.text.font.bold
+                lr2.color: Styles.wallpaper.lyrics.text.color
+                lr2.font.family: Styles.wallpaper.lyrics.text.font.family
+                lr2.font.pixelSize: Styles.wallpaper.lyrics.text.font.pixelSize
+                lr2.font.bold: Styles.wallpaper.lyrics.text.font.bold
+                lr3.font.family: Styles.wallpaper.lyrics.text.font.family
+                lr3.font.pixelSize: Styles.wallpaper.lyrics.text.font.pixelSize
+                lr3.font.bold: Styles.wallpaper.lyrics.text.font.bold
+                lr4.font.family: Styles.wallpaper.lyrics.text.font.family
+                lr4.font.pixelSize: Styles.wallpaper.lyrics.text.font.pixelSize
+                lr4.font.bold: Styles.wallpaper.lyrics.text.font.bold
+                position: PlayerService.position
             }
+
+            Keyboard {
+                id: keyboardWidget
+                anchors.centerIn: parent
+            }
+
+            /*
+            Vectorscope {
+                id: wallpaperScope
+                anchors.centerIn: parent
+                visible: PlayerService.active
+                running: visible && modelData === Quickshell.screens[0]
+            }
+            */
+
         }
     }
 }

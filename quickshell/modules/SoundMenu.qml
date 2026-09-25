@@ -6,13 +6,13 @@ import QtQuick.Controls
 import Quickshell.Services.Pipewire
 import "../components"
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 PopupWindow {
     id: soundMenu
     color: "transparent"
-    implicitHeight: content.height + 10
-    implicitWidth: content.width + 10
+    readonly property int surfacePad: 2
+    implicitHeight: streams.implicitHeight + 2 * Styles.soundMenu.padding + 2 * surfacePad
+    implicitWidth: streams.width + 2 * Styles.soundMenu.padding + 2 * surfacePad
     
     property bool open: false
 
@@ -73,53 +73,28 @@ PopupWindow {
         objects: outputStreams.concat(inputStreams)
     }
 
-    function applyStreamSliderStyles(slider) {
-        Styler.apply(slider, Styles.soundMenu.slider)
-    }
-
-    function applyStreamLabelStyle(label) {
-        Styler.apply(label, Styles.soundMenu.section.text)
-    }
-
-    Component.onCompleted: {
-        Styler.apply(soundMenu, Styles.soundMenu)
-        Styler.apply(mainVolumeLabel, Styles.soundMenu.section.text)
-        Styler.apply(defaultVolumeSlider, Styles.soundMenu.slider)
-        Styler.apply(defaultVolumeSlider, Styles.soundMenu.section.slider)
-        Styler.apply(mainVolume, Styles.soundMenu.section)
-        Styler.apply(sourcesColumn, Styles.soundMenu.section.content)
-        Styler.apply(sourcesHeader, Styles.soundMenu.section.text)
-        Styler.apply(sourcesSection, Styles.soundMenu.section)
-        Styler.apply(appsColumn, Styles.soundMenu.section.content)
-        Styler.apply(appsHeader, Styles.soundMenu.section.text)
-        Styler.apply(appsSection, Styles.soundMenu.section)
-        updateStreams()
-    }
+    Component.onCompleted: updateStreams()
 
     Rectangle {
         id: content
-        width: soundMenu.streamWidth + 24
-        height: streams.implicitHeight + 24
-
-
-        transform: Rotation {
-            id: xAxisRotation
-            origin.x: content.width / 2
-            axis { x: 1; y: 0; z: 0 } 
-            angle: -90 
-        }
-        
-        color: "transparent"
+        x: soundMenu.surfacePad
+        y: -height
+        width: parent.width - 2 * soundMenu.surfacePad
+        height: parent.height - 2 * soundMenu.surfacePad
+        color: Styles.soundMenu.background.color
+        radius: Styles.soundMenu.background.radius
+        border.width: Styles.soundMenu.background.border.width
+        border.color: Styles.soundMenu.background.border.color
+        clip: radius > 0
 
         NumberAnimation {
             id: openAnim
-            target: xAxisRotation
-            property: "angle"
-            from: -90
-            to: 0
+            target: content
+            property: "y"
+            from: -content.height
+            to: soundMenu.surfacePad
             duration: 300
-            
-            easing.type: Easing.OutBack
+            easing.type: Easing.OutQuart
 
             onFinished: {
                 if (!soundMenu.open)
@@ -131,13 +106,13 @@ PopupWindow {
             target: soundMenu
             function onOpenChanged() {
                 if (soundMenu.open) {
-                    xAxisRotation.angle = -90
-                    openAnim.from = -90
-                    openAnim.to = 0
+                    content.y = -content.height
+                    openAnim.from = -content.height
+                    openAnim.to = soundMenu.surfacePad
                     openAnim.start()
                 } else {
-                    openAnim.from = xAxisRotation.angle
-                    openAnim.to = -90
+                    openAnim.from = content.y
+                    openAnim.to = -content.height
                     openAnim.start()
                 }
             }
@@ -145,32 +120,45 @@ PopupWindow {
 
         Column {
             id: streams
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
+            anchors.centerIn: parent
             width: soundMenu.streamWidth
-            spacing: 0
+            spacing: Styles.soundMenu.spacing
 
             Rectangle {
                 id: mainVolume
                 width: streams.width
                 height: 45
+                color: Styles.soundMenu.section.color
+                radius: Styles.soundMenu.section.radius
+                clip: radius > 0
+                border.width: Styles.soundMenu.section.border.width
+                border.color: Styles.soundMenu.section.border.color
 
                 BetterText {
                     id: mainVolumeLabel
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    text: "Main Volume: " + Math.round(soundMenu.defaultSink.audio.volume * 100)
+                    anchors.topMargin: Styles.soundMenu.section.text.anchors.topMargin
+                    anchors.leftMargin: Styles.soundMenu.section.text.anchors.leftMargin
+                    color: Styles.soundMenu.section.text.color
+                    text: "Main Volume: " + Math.round((soundMenu.defaultSink?.audio?.volume ?? 0) * 100)
                 }
 
                 Slider {
                     id: defaultVolumeSlider
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
+                    anchors.bottomMargin: Styles.soundMenu.section.slider.anchors.bottomMargin
+                    anchors.leftMargin: Styles.soundMenu.section.slider.anchors.leftMargin
+                    width: Styles.soundMenu.section.slider.width
                     from: 0.0
                     to: 1.5
                     live: true
-                    value: soundMenu.defaultSink.audio.volume
-                    onMoved: soundMenu.defaultSink.audio.volume = value
+                    value: soundMenu.defaultSink?.audio?.volume ?? 0
+                    onMoved: {
+                        if (soundMenu.defaultSink?.audio)
+                            soundMenu.defaultSink.audio.volume = value
+                    }
 
                     property alias bar: defaultBar
 
@@ -180,13 +168,14 @@ PopupWindow {
                         implicitHeight: 6
                         width: defaultVolumeSlider.availableWidth
                         height: implicitHeight
-                        radius: 0
+                        radius: Styles.soundMenu.slider.radius
+                        color: Styles.soundMenu.slider.background.color
 
-                        Rectangle {
+                        SliderFill {
                             id: defaultBar
-                            width: parent.width * defaultVolumeSlider.visualPosition
-                            height: parent.height
-                            radius: 0
+                            position: defaultVolumeSlider.visualPosition
+                            radius: Styles.soundMenu.slider.radius
+                            color: Styles.soundMenu.slider.bar.color
                         }
                     }
 
@@ -203,6 +192,11 @@ PopupWindow {
             Rectangle {
                 id: sourcesSection
                 width: streams.width
+                color: Styles.soundMenu.section.color
+                radius: Styles.soundMenu.section.radius
+                clip: radius > 0
+                border.width: Styles.soundMenu.section.border.width
+                border.color: Styles.soundMenu.section.border.color
                 implicitHeight: sourcesColumn.implicitHeight
                     + Styles.soundMenu.section.content.anchors.topMargin
                     + Styles.soundMenu.section.content.anchors.bottomMargin
@@ -213,11 +207,18 @@ PopupWindow {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
+                    anchors.topMargin: Styles.soundMenu.section.content.anchors.topMargin
+                    anchors.leftMargin: Styles.soundMenu.section.content.anchors.leftMargin
+                    anchors.rightMargin: Styles.soundMenu.section.content.anchors.rightMargin
+                    anchors.bottomMargin: Styles.soundMenu.section.content.anchors.bottomMargin
                     spacing: Styles.soundMenu.section.content.spacing
 
                     BetterText {
                         id: sourcesHeader
                         width: parent.width
+                        color: Styles.soundMenu.section.text.color
+                        anchors.topMargin: Styles.soundMenu.section.text.anchors.topMargin
+                        anchors.leftMargin: Styles.soundMenu.section.text.anchors.leftMargin
                         text: "Sources:"
                     }
 
@@ -232,9 +233,9 @@ PopupWindow {
                             BetterText {
                                 id: sourceLabel
                                 width: parent.width
+                                color: Styles.soundMenu.section.text.color
                                 text: soundMenu.nodeLabel(modelData) + ": " + Math.round(parent.modelData.audio.volume * 100)
                                 elide: Text.ElideRight
-                                Component.onCompleted: soundMenu.applyStreamLabelStyle(this)
                             }
 
                             Slider {
@@ -248,21 +249,20 @@ PopupWindow {
 
                                 property alias bar: sourceBar
 
-                                Component.onCompleted: soundMenu.applyStreamSliderStyles(this)
-
                                 background: Rectangle {
                                     x: sourceSlider.leftPadding
                                     y: sourceSlider.topPadding + sourceSlider.availableHeight / 2 - height / 2
                                     implicitHeight: 6
                                     width: sourceSlider.availableWidth
                                     height: implicitHeight
-                                    radius: 0
+                                    radius: Styles.soundMenu.slider.radius
+                                    color: Styles.soundMenu.slider.background.color
 
-                                    Rectangle {
+                                    SliderFill {
                                         id: sourceBar
-                                        width: parent.width * sourceSlider.visualPosition
-                                        height: parent.height
-                                        radius: 0
+                                        position: sourceSlider.visualPosition
+                                        radius: Styles.soundMenu.slider.radius
+                                        color: Styles.soundMenu.slider.bar.color
                                     }
                                 }
 
@@ -282,6 +282,11 @@ PopupWindow {
             Rectangle {
                 id: appsSection
                 width: streams.width
+                color: Styles.soundMenu.section.color
+                radius: Styles.soundMenu.section.radius
+                clip: radius > 0
+                border.width: Styles.soundMenu.section.border.width
+                border.color: Styles.soundMenu.section.border.color
                 implicitHeight: appsColumn.implicitHeight
                     + Styles.soundMenu.section.content.anchors.topMargin
                     + Styles.soundMenu.section.content.anchors.bottomMargin
@@ -292,10 +297,16 @@ PopupWindow {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
+                    anchors.topMargin: Styles.soundMenu.section.content.anchors.topMargin
+                    anchors.leftMargin: Styles.soundMenu.section.content.anchors.leftMargin
+                    anchors.rightMargin: Styles.soundMenu.section.content.anchors.rightMargin
+                    anchors.bottomMargin: Styles.soundMenu.section.content.anchors.bottomMargin
+                    spacing: Styles.soundMenu.section.content.spacing
 
                     BetterText {
                         id: appsHeader
                         width: parent.width
+                        color: Styles.soundMenu.section.text.color
                         text: "Apps:"
                     }
 
@@ -310,9 +321,9 @@ PopupWindow {
                             BetterText {
                                 id: nameLabel
                                 width: parent.width
+                                color: Styles.soundMenu.section.text.color
                                 text: soundMenu.nodeLabel(modelData) + ": " + Math.round(parent.modelData.audio.volume * 100)
                                 elide: Text.ElideRight
-                                Component.onCompleted: soundMenu.applyStreamLabelStyle(this)
                             }
 
                             Slider {
@@ -326,21 +337,20 @@ PopupWindow {
 
                                 property alias bar: bar
 
-                                Component.onCompleted: soundMenu.applyStreamSliderStyles(this)
-
                                 background: Rectangle {
                                     x: volumeSlider.leftPadding
                                     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
                                     implicitHeight: 6
                                     width: volumeSlider.availableWidth
                                     height: implicitHeight
-                                    radius: 0
+                                    radius: Styles.soundMenu.slider.radius
+                                    color: Styles.soundMenu.slider.background.color
 
-                                    Rectangle {
+                                    SliderFill {
                                         id: bar
-                                        width: parent.width * volumeSlider.visualPosition
-                                        height: parent.height
-                                        radius: 0
+                                        position: volumeSlider.visualPosition
+                                        radius: Styles.soundMenu.slider.radius
+                                        color: Styles.soundMenu.slider.bar.color
                                     }
                                 }
 

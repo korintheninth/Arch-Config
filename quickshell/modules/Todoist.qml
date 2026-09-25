@@ -3,21 +3,21 @@ import QtQuick.Layouts
 import Quickshell
 import "../components"
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../services"
 
 Rectangle {
     id: todoist
 
-    color: "transparent"
+    color: styleOverride?.color ?? Styles.todoist.color
+    radius: styleOverride?.radius ?? Styles.todoist.radius
 
     property var date: null
     property int maxTasks: 0
-    property int taskMaxWidth: Styles.todoist.taskMaxWidth
-    property int rowSpacing: 3
+    property int taskMaxWidth: styleOverride?.taskMaxWidth ?? Styles.todoist.taskMaxWidth
+    property int rowSpacing: styleOverride?.rowSpacing ?? Styles.todoist.rowSpacing
 
     property var styleOverride: null
-    
+
     ListModel {
         id: taskModel
     }
@@ -65,29 +65,7 @@ Rectangle {
         }
     }
 
-    function applyTaskRowStyles(checkLabel, taskText) {
-        Styler.apply(checkLabel, Styles.todoist.task.check)
-        Styler.apply(taskText, Styles.todoist.task.text)
-        if (styleOverride) {
-            Styler.apply(checkLabel, styleOverride.task?.check)
-            Styler.apply(taskText, styleOverride.task?.text)
-        }
-    }
-
-    Component.onCompleted: {
-        Styler.apply(todoist, Styles.todoist)
-        if (styleOverride)
-            Styler.apply(todoist, styleOverride)
-        Styler.apply(emptyLabel, Styles.todoist.empty.text)
-        Styler.apply(loadingLabel, Styles.todoist.empty.text)
-        Styler.apply(errorLabel, Styles.todoist.error.text)
-        if (styleOverride) {
-            Styler.apply(emptyLabel, styleOverride.empty?.text)
-            Styler.apply(loadingLabel, styleOverride.empty?.text)
-            Styler.apply(errorLabel, styleOverride.error?.text)
-        }
-        applyLocalTasks()
-    }
+    Component.onCompleted: applyLocalTasks()
 
     onDateChanged: applyLocalTasks()
 
@@ -115,11 +93,16 @@ Rectangle {
                     BetterText {
                         id: checkLabel
                         text: closing ? "◌" : "□"
-                        opacity: closing ? 0.45 : 1
                         property bool hovered: false
-                        color: hovered
-                            ? Styles.todoist.task.check.hoverColor
-                            : TodoistService.priorityColor(priority)
+                        color: {
+                            const base = hovered
+                                ? (todoist.styleOverride?.task?.check?.hoverColor ?? Styles.todoist.task.check.hoverColor)
+                                : TodoistService.priorityColor(priority)
+                            return faded(base, closing ? 0.45 : 1)
+                        }
+                        font.family: todoist.styleOverride?.task?.check?.font?.family ?? Styles.todoist.task.check.font.family
+                        font.bold: todoist.styleOverride?.task?.check?.font?.bold ?? Styles.todoist.task.check.font.bold
+                        font.pixelSize: todoist.styleOverride?.task?.check?.font?.pixelSize ?? Styles.todoist.task.check.font.pixelSize
                     }
 
                     MouseArea {
@@ -139,11 +122,15 @@ Rectangle {
                     wrapMode: Text.Wrap
                     maximumLineCount: 2
                     elide: Text.ElideRight
-                    opacity: closing ? 0.45 : 1
                     font.strikeout: closing
+                    color: faded(
+                        todoist.styleOverride?.task?.text?.color ?? Styles.todoist.task.text.color,
+                        closing ? 0.45 : 1
+                    )
+                    font.family: todoist.styleOverride?.task?.text?.font?.family ?? Styles.todoist.task.text.font.family
+                    font.bold: todoist.styleOverride?.task?.text?.font?.bold ?? Styles.todoist.task.text.font.bold
+                    font.pixelSize: todoist.styleOverride?.task?.text?.font?.pixelSize ?? Styles.todoist.task.text.font.pixelSize
                 }
-
-                Component.onCompleted: todoist.applyTaskRowStyles(checkLabel, taskText)
             }
         }
 
@@ -151,12 +138,18 @@ Rectangle {
             id: emptyLabel
             visible: !TodoistService.loading && taskModel.count === 0 && !TodoistService.error
             text: "No tasks"
+            color: todoist.styleOverride?.empty?.text?.color ?? Styles.todoist.empty.text.color
+            font.family: todoist.styleOverride?.empty?.text?.font?.family ?? Styles.todoist.empty.text.font.family
+            font.bold: todoist.styleOverride?.empty?.text?.font?.bold ?? Styles.todoist.empty.text.font.bold
         }
 
         BetterText {
             id: loadingLabel
             visible: TodoistService.loading && taskModel.count === 0
             text: "…"
+            color: todoist.styleOverride?.empty?.text?.color ?? Styles.todoist.empty.text.color
+            font.family: todoist.styleOverride?.empty?.text?.font?.family ?? Styles.todoist.empty.text.font.family
+            font.bold: todoist.styleOverride?.empty?.text?.font?.bold ?? Styles.todoist.empty.text.font.bold
         }
 
         BetterText {
@@ -165,6 +158,9 @@ Rectangle {
             text: TodoistService.error
             wrapMode: Text.Wrap
             width: taskColumn.width
+            color: todoist.styleOverride?.error?.text?.color ?? Styles.todoist.error.text.color
+            font.family: todoist.styleOverride?.error?.text?.font?.family ?? Styles.todoist.error.text.font.family
+            font.bold: todoist.styleOverride?.error?.text?.font?.bold ?? Styles.todoist.error.text.font.bold
         }
     }
 

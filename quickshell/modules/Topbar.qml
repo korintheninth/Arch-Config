@@ -1,71 +1,76 @@
 import Quickshell
 import QtQuick
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
+import "../apps/wallpaper"
+import "../apps/mpd"
 
 Scope {
     Connections {
         target: Quickshell
-        
-        // Disables the default popup when a config reloads successfully
+
         function onReloadCompleted() {
             Quickshell.inhibitReloadPopup()
         }
-        
-        // Disables the red error popup when you have a syntax error
+
         function onReloadFailed(error) {
             Quickshell.inhibitReloadPopup()
-            
-            // Optional: Print the error to your terminal instead so you don't lose it entirely
-            console.error("Config Error: " + error) 
+            console.error("Config Error: " + error)
         }
     }
+
     Variants {
         model: Quickshell.screens
         delegate: Component {
             PanelWindow {
+                id: topbar
                 required property var modelData
                 screen: modelData
 
-                id: topbar
                 anchors.top: true
                 anchors.left: true
                 anchors.right: true
+                color: Styles.topbar.color
+                implicitHeight: Styles.topbar.implicitHeight
+                margins.top: Styles.topbar.margins.top
+                margins.left: Styles.topbar.margins.left
+                margins.right: Styles.topbar.margins.right
+                margins.bottom: Styles.topbar.margins.bottom
                 property alias background: bg
-                
-                Component.onCompleted: Styler.apply(topbar, Styles.topbar)
 
                 Rectangle {
                     id: bg
                     anchors.fill: parent
+                    color: Styles.topbar.background.color
+                    border.width: Styles.topbar.background.border.width
+                    border.color: Styles.topbar.background.border.color
                 }
 
-                    //left row
                 Row {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     Workspaces { implicitHeight: topbar.height }
                     Systray { barHeight: topbar.height }
-                    Media {implicitHeight: topbar.height}
-                    spacing:10
+                    Media { implicitHeight: topbar.height }
+                    spacing: 10
                 }
-                
-                //center row
+
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    Clock {implicitHeight: topbar.height}
+                    Clock { implicitHeight: topbar.height }
                 }
-                
-                //right row
+
                 Row {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Updates { height: topbar.height }
                     Sound { height: topbar.height }
-                    Battery {height: topbar.height}
-                    HWState {height: topbar.height - 4}
+                    Battery { height: topbar.height }
+                    HWState { height: topbar.height - 4 }
                 }
             }
         }
     }
+
+    GalleryWindow {}
+    MpdWindow {}
 }

@@ -1,0 +1,1696 @@
+{
+  "layoutId": "eLpVR",
+  "revisionId": "Jad9Q0",
+  "title": "layout0",
+  "geometry": "voyager",
+  "layers": [
+    {
+      "index": 0,
+      "name": "Main",
+      "keys": [
+        {
+          "tap": "Esc",
+          "hold": "",
+          "doubleTap": "TO(3)",
+          "tapHold": "",
+          "label": "Esc",
+          "glowColor": ""
+        },
+        {
+          "tap": "\"",
+          "hold": "'",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "\"",
+          "glowColor": ""
+        },
+        {
+          "tap": "=",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "=",
+          "glowColor": ""
+        },
+        {
+          "tap": "(",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "(",
+          "glowColor": ""
+        },
+        {
+          "tap": ")",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ")",
+          "glowColor": ""
+        },
+        {
+          "tap": "+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "+",
+          "glowColor": ""
+        },
+        {
+          "tap": "&",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "&",
+          "glowColor": ""
+        },
+        {
+          "tap": "Q",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Q",
+          "glowColor": ""
+        },
+        {
+          "tap": "W",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "W",
+          "glowColor": ""
+        },
+        {
+          "tap": "E",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "E",
+          "glowColor": ""
+        },
+        {
+          "tap": "R",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "R",
+          "glowColor": ""
+        },
+        {
+          "tap": "T",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "T",
+          "glowColor": ""
+        },
+        {
+          "tap": "|",
+          "hold": "Alt",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "|",
+          "glowColor": ""
+        },
+        {
+          "tap": "A",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "A",
+          "glowColor": ""
+        },
+        {
+          "tap": "S",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "S",
+          "glowColor": ""
+        },
+        {
+          "tap": "D",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "D",
+          "glowColor": ""
+        },
+        {
+          "tap": "F",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F",
+          "glowColor": ""
+        },
+        {
+          "tap": "G",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "G",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "SPR",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "SPR",
+          "glowColor": ""
+        },
+        {
+          "tap": "Z",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Z",
+          "glowColor": ""
+        },
+        {
+          "tap": "X",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "X",
+          "glowColor": ""
+        },
+        {
+          "tap": "C",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "C",
+          "glowColor": ""
+        },
+        {
+          "tap": "V",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "V",
+          "glowColor": ""
+        },
+        {
+          "tap": "B",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "B",
+          "glowColor": ""
+        },
+        {
+          "tap": "Spc",
+          "hold": "MO(1)",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Spc",
+          "glowColor": ""
+        },
+        {
+          "tap": "Tab",
+          "hold": "Ctrl",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Tab",
+          "glowColor": ""
+        },
+        {
+          "tap": "-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "-",
+          "glowColor": ""
+        },
+        {
+          "tap": "{",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "{",
+          "glowColor": ""
+        },
+        {
+          "tap": "}",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "}",
+          "glowColor": ""
+        },
+        {
+          "tap": "[",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "[",
+          "glowColor": ""
+        },
+        {
+          "tap": "]",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "]",
+          "glowColor": ""
+        },
+        {
+          "tap": "/",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "/",
+          "glowColor": ""
+        },
+        {
+          "tap": "Y",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Y",
+          "glowColor": ""
+        },
+        {
+          "tap": "U",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "U",
+          "glowColor": ""
+        },
+        {
+          "tap": "I",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "I",
+          "glowColor": ""
+        },
+        {
+          "tap": "O",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "O",
+          "glowColor": ""
+        },
+        {
+          "tap": "P",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "P",
+          "glowColor": ""
+        },
+        {
+          "tap": "*",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "*",
+          "glowColor": ""
+        },
+        {
+          "tap": "H",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "H",
+          "glowColor": ""
+        },
+        {
+          "tap": "J",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "J",
+          "glowColor": ""
+        },
+        {
+          "tap": "K",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "K",
+          "glowColor": ""
+        },
+        {
+          "tap": "L",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "L",
+          "glowColor": ""
+        },
+        {
+          "tap": ";",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ";",
+          "glowColor": ""
+        },
+        {
+          "tap": ":",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ":",
+          "glowColor": ""
+        },
+        {
+          "tap": "N",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "N",
+          "glowColor": ""
+        },
+        {
+          "tap": "M",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "M",
+          "glowColor": ""
+        },
+        {
+          "tap": ",",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ",",
+          "glowColor": ""
+        },
+        {
+          "tap": ".",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ".",
+          "glowColor": ""
+        },
+        {
+          "tap": "<",
+          "hold": "Alt",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "<",
+          "glowColor": ""
+        },
+        {
+          "tap": ">",
+          "hold": "Ctrl",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ">",
+          "glowColor": ""
+        },
+        {
+          "tap": "Bksp",
+          "hold": "Shift",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Bksp",
+          "glowColor": ""
+        },
+        {
+          "tap": "Ent",
+          "hold": "MO(2)",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Ent",
+          "glowColor": ""
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Sym+Num",
+      "keys": [
+        {
+          "tap": "Esc",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Esc",
+          "glowColor": "#0075FF"
+        },
+        {
+          "tap": "F1",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F1",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F2",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F2",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F3",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F3",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F4",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F4",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F5",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F5",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "`",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "`",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "@",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "@",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "!",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "!",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "#",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "#",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "$",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "$",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "%",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "%",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "#",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "#",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "^",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "^",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "&",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "&",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "?",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "?",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "/",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "/",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "\\",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "\\",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "~",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "~",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "|",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "|",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "_",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "_",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "{",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "{",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "}",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "}",
+          "glowColor": "#F50909"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "F6",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F6",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F7",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F7",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F8",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F8",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F9",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F9",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F10",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F10",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "F11",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F11",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "7",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "7",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "8",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "8",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "9",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "9",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "-",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "/",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "/",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "F12",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "F12",
+          "glowColor": "#42FF00"
+        },
+        {
+          "tap": "4",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "4",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "5",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "5",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "6",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "6",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "+",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "*",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "*",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "Bksp",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Bksp",
+          "glowColor": "#0075FF"
+        },
+        {
+          "tap": "1",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "1",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "2",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "2",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": "3",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "3",
+          "glowColor": "#000EFF"
+        },
+        {
+          "tap": ".",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": ".",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "=",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "=",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "Ent",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Ent",
+          "glowColor": "#0075FF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "0",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "0",
+          "glowColor": "#000EFF"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Brd+Sys",
+      "keys": [
+        {
+          "tap": "RGB",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "RGB",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "TLC",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "TLC",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "RGB+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "RGB+",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "RGB-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "RGB-",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "V-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "V-",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "V+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "V+",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Eject",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Eject",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Vol-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Vol-",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Vol+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Vol+",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Mute",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Mute",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Pwr",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Pwr",
+          "glowColor": "#FF0000"
+        },
+        {
+          "tap": "Prev",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Prev",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Next",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Next",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Stop",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Stop",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Play",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Play",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Sleep",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Sleep",
+          "glowColor": "#FF0000"
+        },
+        {
+          "tap": "Spd-",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Spd-",
+          "glowColor": "#FFF500"
+        },
+        {
+          "tap": "Spd+",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Spd+",
+          "glowColor": "#00F0FF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Boot",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Boot",
+          "glowColor": "#FF0000"
+        },
+        {
+          "tap": "PgUp",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "PgUp",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Home",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Home",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "↑",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "↑",
+          "glowColor": "#01FF00"
+        },
+        {
+          "tap": "End",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "End",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Del",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Del",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "PgDn",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "PgDn",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "←",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "←",
+          "glowColor": "#01FF00"
+        },
+        {
+          "tap": "↓",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "↓",
+          "glowColor": "#01FF00"
+        },
+        {
+          "tap": "→",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "→",
+          "glowColor": "#01FF00"
+        },
+        {
+          "tap": "PrtSc",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "PrtSc",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "CS-Tab",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Prev Tab",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "C-Tab",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Next Tab",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "A-Tab",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "alt tab",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "AS-Tab",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "s alt tab",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "game",
+      "keys": [
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "1",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "1",
+          "glowColor": ""
+        },
+        {
+          "tap": "2",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "2",
+          "glowColor": ""
+        },
+        {
+          "tap": "3",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "3",
+          "glowColor": ""
+        },
+        {
+          "tap": "4",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "4",
+          "glowColor": ""
+        },
+        {
+          "tap": "5",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "5",
+          "glowColor": ""
+        },
+        {
+          "tap": "Tab",
+          "hold": "Alt",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Tab",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": "#00BFFF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Shift",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Shift",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": "#00BFFF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": "#00BFFF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": "#00BFFF"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "TO(0)",
+          "tapHold": "",
+          "label": "TO(0)",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "Spc",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Spc",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "Ctrl",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "Ctrl",
+          "glowColor": "#FF00F9"
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        },
+        {
+          "tap": "",
+          "hold": "",
+          "doubleTap": "",
+          "tapHold": "",
+          "label": "",
+          "glowColor": ""
+        }
+      ]
+    }
+  ]
+}

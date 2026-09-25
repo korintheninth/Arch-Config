@@ -5,7 +5,6 @@ import Quickshell.Hyprland
 import Quickshell
 import Quickshell.Services.SystemTray
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 PopupWindow {
     id: trayMenu
@@ -21,9 +20,23 @@ PopupWindow {
     property var rootMenu: null
 
     property bool hovered: false
+    property bool childTreeHovered: false
+    readonly property bool treeHovered: hovered || childTreeHovered
 
     HoverHandler {
         onHoveredChanged: trayMenu.hovered = hovered
+    }
+
+    function updateChildTreeHovered() {
+        let any = false
+        for (let i = 0; i < itemsColumn.children.length; ++i) {
+            const child = itemsColumn.children[i]
+            if (child?.subMenu?.treeHovered) {
+                any = true
+                break
+            }
+        }
+        childTreeHovered = any
     }
 
     property var allowedWindows: isSubMenu ? [] : [trayMenu]
@@ -46,13 +59,18 @@ PopupWindow {
     anchor.edges: isSubMenu ? Edges.Right : Edges.Bottom
     anchor.gravity: isSubMenu ? Edges.Right : Edges.Bottom
 
-    implicitWidth: Math.max(panel.implicitWidth, 1)
-    implicitHeight: Math.max(panel.implicitHeight, 1)
+    implicitWidth: Math.max(panel.implicitWidth + 2 * surfacePad, 1)
+    implicitHeight: Math.max(panel.implicitHeight + 2 * surfacePad, 1)
+    readonly property int surfacePad: 2
+    anchor.margins.top: isSubMenu ? 0 : (styleOverride?.anchor?.margins?.top ?? Styles.trayMenu.anchor.margins.top)
+    anchor.margins.bottom: isSubMenu ? 0 : 0
+    anchor.margins.left: isSubMenu ? 0 : 0
+    anchor.margins.right: isSubMenu ? 0 : 0
 
     onOpenChanged: {
         if (!open)
             return
-        if (!isSubMenu && !trayItem?.hasMenu) { 
+        if (!isSubMenu && !trayItem?.hasMenu) {
             open = false
             return
         }
@@ -75,6 +93,14 @@ PopupWindow {
         }
     }
 
+    function releaseMenu() {
+        closeAllSubMenus()
+        if (isSubMenu)
+            return
+        allowedWindows = [trayMenu]
+        trayItem = null
+    }
+
     readonly property Component subMenuComponent: Qt.createComponent(
         Qt.resolvedUrl("StyledTrayMenu.qml"))
 
@@ -93,6 +119,7 @@ PopupWindow {
         owner.subMenu.open = true
         const sm = owner.subMenu
         root.allowedWindows = root.allowedWindows.concat([sm])
+        trayMenu.updateChildTreeHovered()
         return owner.subMenu
     }
 
@@ -100,27 +127,27 @@ PopupWindow {
         id: menuOpener
         menu: trayMenu.menu
     }
-    
 
     property alias background: panel
 
-    property int menuPadding: 8
+    property int menuPadding: styleOverride?.menuPadding ?? Styles.trayMenu.menuPadding
     color: "transparent"
-    
+
     Rectangle {
         id: panel
         implicitWidth: itemsColumn.implicitWidth + menuPadding * 2
-        implicitHeight: Math.min(itemsColumn.implicitHeight + menuPadding * 2, 400)
-        anchors.fill: parent
-        color: "transparent"
-
-        transform: Translate {
-            id: slideTransform
-        }
+        implicitHeight: itemsColumn.implicitHeight + menuPadding * 2
+        x: trayMenu.surfacePad
+        y: trayMenu.surfacePad
+        width: implicitWidth
+        height: implicitHeight
+        color: styleOverride?.background?.color ?? Styles.trayMenu.background.color
+        border.width: styleOverride?.background?.border?.width ?? Styles.trayMenu.background.border.width
+        border.color: styleOverride?.background?.border?.color ?? Styles.trayMenu.background.border.color
 
         NumberAnimation {
             id: openAnim
-            target: slideTransform
+            target: panel
             property: trayMenu.isSubMenu ? "x" : "y"
             duration: 350
             easing.type: Easing.OutQuart
@@ -128,8 +155,14 @@ PopupWindow {
             onFinished: {
                 if (!trayMenu.open) {
                     trayMenu.visible = false
-                    if (trayMenu.isSubMenu)
+                    if (trayMenu.isSubMenu) {
+                        const root = trayMenu.rootMenu
+                        if (root)
+                            root.allowedWindows = root.allowedWindows.filter(w => w && w !== trayMenu)
                         trayMenu.destroy()
+                    } else {
+                        trayMenu.releaseMenu()
+                    }
                 }
             }
         }
@@ -139,13 +172,15 @@ PopupWindow {
             interval: 30
             onTriggered: {
                 if (trayMenu.isSubMenu) {
-                    slideTransform.x = -panel.width - 50
+                    panel.x = -panel.width - 50
+                    panel.y = trayMenu.surfacePad
                     openAnim.from = -panel.width - 50
                 } else {
-                    slideTransform.y = -panel.height - 50
+                    panel.y = -panel.height - 50
+                    panel.x = trayMenu.surfacePad
                     openAnim.from = -panel.height - 50
                 }
-                openAnim.to = 0
+                openAnim.to = trayMenu.surfacePad
                 openAnim.start()
             }
         }
@@ -155,17 +190,17 @@ PopupWindow {
             function onOpenChanged() {
                 if (trayMenu.open) {
                     if (trayMenu.isSubMenu)
-                        slideTransform.x = -2000
+                        panel.x = -2000
                     else
-                        slideTransform.y = -2000
+                        panel.y = -2000
                     layoutDelay.start()
                 } else {
                     layoutDelay.stop()
                     if (trayMenu.isSubMenu) {
-                        openAnim.from = slideTransform.x
+                        openAnim.from = panel.x
                         openAnim.to = -panel.width - 50
                     } else {
-                        openAnim.from = slideTransform.y
+                        openAnim.from = panel.y
                         openAnim.to = -panel.height - 50
                     }
                     openAnim.start()
@@ -195,16 +230,4 @@ PopupWindow {
         }
     }
 
-    Component.onCompleted: {
-        if (typeof Styles !== "undefined" && Styles.trayMenu)
-            Styler.apply(trayMenu, Styles.trayMenu)
-        if (styleOverride)
-            Styler.apply(trayMenu, styleOverride)
-        if (isSubMenu) {
-            anchor.margins.top = 0
-            anchor.margins.bottom = 0
-            anchor.margins.left = 0
-            anchor.margins.right = 0
-        }
-    }
 }

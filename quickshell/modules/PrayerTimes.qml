@@ -3,16 +3,15 @@ import QtQuick.Layouts
 import Quickshell
 import "../components"
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../services"
 
 Rectangle {
     id: prayerTimes
 
-    color: "transparent"
+    color: styleOverride?.color ?? Styles.prayerTimes.color
+    radius: styleOverride?.radius ?? Styles.prayerTimes.radius
 
-    property int rowSpacing: 3
-    property int maxWidth: Styles.prayerTimes.maxWidth
+    property int rowSpacing: styleOverride?.rowSpacing ?? Styles.prayerTimes.rowSpacing
     property var styleOverride: null
 
     ListModel {
@@ -41,49 +40,46 @@ Rectangle {
         }
     }
 
-    function applyRowStyles(nameLabel, timeLabel) {
-        const active = PrayerTimesService.curPrayer === nameLabel.text
-        Styler.apply(nameLabel, active ? Styles.prayerTimes.row.active.name : Styles.prayerTimes.row.name)
-        Styler.apply(timeLabel, active ? Styles.prayerTimes.row.active.time : Styles.prayerTimes.row.time)
-        if (styleOverride) {
-            Styler.apply(nameLabel, active ? styleOverride.row?.active?.name : styleOverride.row?.name)
-            Styler.apply(timeLabel, active ? styleOverride.row?.active?.time : styleOverride.row?.time)
-        }
-    }
-
-    Component.onCompleted: {
-        Styler.apply(prayerTimes, Styles.prayerTimes)
-        if (styleOverride)
-            Styler.apply(prayerTimes, styleOverride)
-        Styler.apply(loadingLabel, Styles.prayerTimes.empty.text)
-        Styler.apply(errorLabel, Styles.prayerTimes.error.text)
-        Styler.apply(dateLabel, Styles.prayerTimes.date)
-        if (styleOverride) {
-            Styler.apply(loadingLabel, styleOverride.empty?.text)
-            Styler.apply(errorLabel, styleOverride.error?.text)
-        }
-        applyLocalPrayers()
-    }
+    Component.onCompleted: applyLocalPrayers()
 
     Column {
         id: prayerColumn
-        width: prayerTimes.maxWidth
+        anchors.fill: parent
         spacing: prayerTimes.rowSpacing
 
+        /*
         BetterText {
             id: dateLabel
             anchors.horizontalCenter: parent.horizontalCenter
             text: PrayerTimesService.date
             font.pixelSize: Styles.prayerTimes.pixelSize
             horizontalAlignment: Text.AlignHCenter
-    }
-    
+            color: Styles.prayerTimes.date.color
+            font.family: Styles.prayerTimes.date.font.family
+            font.bold: Styles.prayerTimes.date.font.bold
+        }
+        */
+
         Repeater {
             model: prayerModel
 
             delegate: RowLayout {
                 required property string name
                 required property string time
+
+                readonly property bool active: PrayerTimesService.curPrayer === name
+                readonly property var nameStyle: {
+                    const o = prayerTimes.styleOverride
+                    const over = active ? o?.row?.active?.name : o?.row?.name
+                    const base = active ? Styles.prayerTimes.row.active.name : Styles.prayerTimes.row.name
+                    return over ?? base
+                }
+                readonly property var timeStyle: {
+                    const o = prayerTimes.styleOverride
+                    const over = active ? o?.row?.active?.time : o?.row?.time
+                    const base = active ? Styles.prayerTimes.row.active.time : Styles.prayerTimes.row.time
+                    return over ?? base
+                }
 
                 width: prayerColumn.width
                 spacing: 6
@@ -92,23 +88,20 @@ Rectangle {
                     id: nameLabel
                     Layout.fillWidth: true
                     text: name
-                    font.pixelSize: Styles.prayerTimes.pixelSize
+                    font.pixelSize: nameStyle.font?.pixelSize ?? Styles.prayerTimes.pixelSize
+                    color: nameStyle.color
+                    font.family: nameStyle.font?.family ?? Styles.prayerTimes.row.name.font.family
+                    font.bold: nameStyle.font?.bold ?? false
                 }
 
                 BetterText {
                     id: timeLabel
                     text: time
-                    font.pixelSize: Styles.prayerTimes.pixelSize
+                    font.pixelSize: timeStyle.font?.pixelSize ?? Styles.prayerTimes.pixelSize
+                    color: timeStyle.color
+                    font.family: timeStyle.font?.family ?? Styles.prayerTimes.row.time.font.family
+                    font.bold: timeStyle.font?.bold ?? false
                 }
-
-                Connections {
-                    target: PrayerTimesService
-                    function onCurPrayerChanged() {
-                        prayerTimes.applyRowStyles(nameLabel, timeLabel)
-                    }
-                }
-
-                Component.onCompleted: prayerTimes.applyRowStyles(nameLabel, timeLabel)
             }
         }
 
@@ -116,6 +109,9 @@ Rectangle {
             id: loadingLabel
             visible: PrayerTimesService.loading && prayerModel.count === 0
             text: "…"
+            color: prayerTimes.styleOverride?.empty?.text?.color ?? Styles.prayerTimes.empty.text.color
+            font.family: prayerTimes.styleOverride?.empty?.text?.font?.family ?? Styles.prayerTimes.empty.text.font.family
+            font.bold: prayerTimes.styleOverride?.empty?.text?.font?.bold ?? Styles.prayerTimes.empty.text.font.bold
         }
 
         BetterText {
@@ -124,7 +120,42 @@ Rectangle {
             text: PrayerTimesService.error
             wrapMode: Text.Wrap
             width: prayerColumn.width
+            color: prayerTimes.styleOverride?.error?.text?.color ?? Styles.prayerTimes.error.text.color
+            font.family: prayerTimes.styleOverride?.error?.text?.font?.family ?? Styles.prayerTimes.error.text.font.family
+            font.bold: prayerTimes.styleOverride?.error?.text?.font?.bold ?? Styles.prayerTimes.error.text.font.bold
         }
+
+        Item {
+            width: 1
+            height: prayerTimes.styleOverride?.timer?.topMargin ?? Styles.prayerTimes.timer.topMargin
+            visible: countdownLabel.visible
+        }
+
+        BetterText {
+            id: countdownLabel
+            visible: PrayerTimesService.remainingText.length > 0
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: PrayerTimesService.remainingText
+            font.pixelSize: prayerTimes.styleOverride?.timer?.font?.pixelSize ?? Styles.prayerTimes.timer.font.pixelSize
+            font.family: prayerTimes.styleOverride?.timer?.font?.family ?? Styles.prayerTimes.timer.font.family
+            font.bold: prayerTimes.styleOverride?.timer?.font?.bold ?? Styles.prayerTimes.timer.font.bold
+            color: prayerTimes.styleOverride?.timer?.color ?? Styles.prayerTimes.timer.color
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        /*
+        BetterText {
+            id: nextPrayerLabel
+            visible: countdownLabel.visible && PrayerTimesService.nextPrayer.length > 0
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "until " + PrayerTimesService.nextPrayer
+            font.pixelSize: prayerTimes.styleOverride?.timerLabel?.font?.pixelSize ?? Styles.prayerTimes.timerLabel.font.pixelSize
+            font.family: prayerTimes.styleOverride?.timerLabel?.font?.family ?? Styles.prayerTimes.timerLabel.font.family
+            font.bold: prayerTimes.styleOverride?.timerLabel?.font?.bold ?? Styles.prayerTimes.timerLabel.font.bold
+            color: prayerTimes.styleOverride?.timerLabel?.color ?? Styles.prayerTimes.timerLabel.color
+            horizontalAlignment: Text.AlignHCenter
+        }
+        */
     }
 
     implicitWidth: prayerColumn.implicitWidth

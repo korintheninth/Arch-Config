@@ -3,6 +3,11 @@ import sys
 import cutlet
 from pypinyin import pinyin, Style
 import re
+import urllib3.util.connection as urllib3_conn
+
+# music.youtube.com AAAA is Google APAC anycast; TCP/443 black-holes from this
+# network. urllib3 tries those first (no Happy Eyeballs), ~30s each.
+urllib3_conn.HAS_IPV6 = False
 
 katsu = cutlet.Cutlet()
 katsu.use_foreign_spelling = False
@@ -14,6 +19,9 @@ track_artist = sys.argv[2]
 track_album = sys.argv[3]
 track_duration = sys.argv[4]
 search_results = yt.search(f"{track_name} - {track_artist} - {track_album}", filter="songs")
+
+def compact_title(text):
+    return re.sub(r"\s+", "", str(text or "").lower())
 
 def get_duration_diff(song):
     duration_str = song.get("duration", "0:00")
@@ -28,6 +36,18 @@ def get_duration_diff(song):
     total_seconds = (minutes * 60) + seconds
     
     return abs(total_seconds - float(track_duration))
+
+def song_album_name(song):
+    album = song.get("album") or {}
+    if isinstance(album, dict):
+        return album.get("name", "")
+    return str(album)
+
+def album_matches(song):
+    target = compact_title(track_album)
+    if not target:
+        return False
+    return compact_title(song_album_name(song)) == target
 
 def to_pinyin(line):
     converted = pinyin(line, style=Style.TONE)
@@ -48,19 +68,22 @@ def detect_lyric_language(line):
     else:
         return "latin"
 
+target_title = compact_title(track_name)
+
 matching = [
     song for song in search_results
-    if (track_name.lower() in song['title'].lower() or song['title'].lower() in track_name.lower()) and any(a['name'].lower() in track_artist.lower() for a in song['artists'])
+    if compact_title(song.get("title")) == target_title
+        and any(a['name'].lower() in track_artist.lower() or track_artist.lower() in a['name'].lower() for a in song['artists'])
 ]
 
 if len(matching) < 1:
     exit()
 
-matching.sort(key=get_duration_diff)
+matching.sort(key=lambda song: (0 if album_matches(song) else 1, get_duration_diff(song)))
 
 top_song = matching[0]
 
-if get_duration_diff(top_song) > 5:
+if get_duration_diff(top_song) > 1:
     exit()
 
 video_id = top_song['videoId']

@@ -1,13 +1,14 @@
 import QtQuick
 import Quickshell.Services.UPower
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../components"
 
 Rectangle {
     id: battery
 
     height: parent.height
+    color: Styles.battery.color
+    radius: Styles.battery.radius
 
     property alias text: row.valueLabel
     readonly property int pct: Math.round(UPower.displayDevice.percentage * 100)
@@ -23,8 +24,8 @@ Rectangle {
 
     function iconAt(level) {
         const icons = isCharging
-            ? Styles.battery.chargingIcons
-            : Styles.battery.dischargingIcons
+            ? Styles.battery.icon.charging
+            : Styles.battery.icon.discharging
         if (!icons || icons.length === 0)
             return ""
         const index = Math.min(
@@ -61,21 +62,19 @@ Rectangle {
         return t ? t + " remaining" : "—"
     }
 
-    Component.onCompleted: {
-        Styler.apply(battery, Styles.battery)
-        Styler.apply(row.iconLabel, Styles.battery.icon)
-        Styler.apply(row.valueLabel, Styles.battery.text)
-    }
-
     IconValueRow {
         id: row
         anchors.centerIn: parent
 
         iconLabel.text: battery.iconAt(battery.pct)
         iconLabel.color: battery.labelColor
+        iconLabel.font.family: Styles.battery.icon.font.family
+        iconLabel.font.bold: Styles.battery.icon.font.bold
 
         valueLabel.text: battery.pct + "%"
         valueLabel.color: battery.labelColor
+        valueLabel.font.family: Styles.battery.text.font.family
+        valueLabel.font.bold: Styles.battery.text.font.bold
     }
 
     implicitWidth: row.implicitWidth + 10

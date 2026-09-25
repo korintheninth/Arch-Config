@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import QtQuick
+import "../components"
 
 Singleton {
     id: prayerTimesService
@@ -12,6 +13,8 @@ Singleton {
 
     property var prayers: []
     property string curPrayer: ""
+    property string nextPrayer: ""
+    property string remainingText: ""
     property string date: ""
     property bool loading: false
     property string error: ""
@@ -47,12 +50,11 @@ Singleton {
         onTriggered: prayerTimesService.refreshAll()
     }
 
-    Timer {
-        id: tickTimer
-        interval: 60000
-        running: prayers.length > 0
-        repeat: true
-        onTriggered: prayerTimesService.updateCurrentPrayer()
+    SystemClock {
+        id: clock
+        precision: SystemClock.Seconds
+        enabled: prayers.length > 0
+        onDateChanged: prayerTimesService.updateCurrentPrayer()
     }
 
     onErrorChanged: {
@@ -66,6 +68,11 @@ Singleton {
 
     function scheduleRefresh() {
         refreshDebounce.restart()
+    }
+
+    CurlRequest {
+        id: http
+        name: "Aladhan"
     }
 
     function cleanTime(value) {
@@ -85,8 +92,6 @@ Singleton {
         const sortedTimings = Object.entries(timings).sort((a, b) => {
             let timeA = a[1];
             let timeB = b[1];
-            if (timeA <= timings["Imsak"]) timeA = "5" + timeA; 
-            if (timeB <= timings["Imsak"]) timeB = "5" + timeB;
 
             return timeA.localeCompare(timeB);
         })
@@ -100,27 +105,61 @@ Singleton {
         return result
     }
 
+    function pad2(n) {
+        return String(n).padStart(2, "0")
+    }
+
+    function formatRemaining(hours, minutes, seconds, nextMins) {
+        const nowMins = hours * 60 + minutes
+        let remMins = nextMins - nowMins
+        if (remMins < 0)
+            remMins += 24 * 60
+        const totalSec = Math.max(0, remMins * 60 - seconds)
+        const h = Math.floor(totalSec / 3600)
+        const m = Math.floor((totalSec % 3600) / 60)
+        const s = totalSec % 60
+        return pad2(h) + ":" + pad2(m) + ":" + pad2(s)
+    }
+
     function updateCurrentPrayer() {
-        const now = new Date()
-        const nowMins = now.getHours() * 60 + now.getMinutes()
+        if (!prayers.length) {
+            curPrayer = ""
+            nextPrayer = ""
+            remainingText = ""
+            return
+        }
+
+        const nowMins = clock.hours * 60 + clock.minutes
         let cur = ""
+        let nextName = ""
+        let nextMins = -1
 
         for (let i = 0; i < prayers.length; i++) {
             let currentMins = minutesFromMidnight(prayers[i].time);
-            let nextMins = minutesFromMidnight(prayers[(i + 1) % prayers.length].time);
-            if ((currentMins < nextMins && nowMins >= currentMins && nowMins < nextMins)
-                || (currentMins > nextMins && (nowMins >= currentMins || nowMins < nextMins))
+            let nxtMins = minutesFromMidnight(prayers[(i + 1) % prayers.length].time);
+            if ((currentMins < nxtMins && nowMins >= currentMins && nowMins < nxtMins)
+                || (currentMins > nxtMins && (nowMins >= currentMins || nowMins < nxtMins))
                 ) {
                 cur = prayers[i].name
+                const next = prayers[(i + 1) % prayers.length]
+                nextName = next.name
+                nextMins = nxtMins
                 break
             }
         }
 
-        if (!cur && prayers.length > 0)
+        if (!cur) {
             cur = prayers[prayers.length - 1].name
+            nextName = prayers[0].name
+            nextMins = minutesFromMidnight(prayers[0].time)
+        }
 
         if (curPrayer !== cur)
             curPrayer = cur
+        if (nextPrayer !== nextName)
+            nextPrayer = nextName
+
+        remainingText = formatRemaining(clock.hours, clock.minutes, clock.seconds, nextMins)
     }
 
     function setPrayerData(list) {
@@ -130,34 +169,15 @@ Singleton {
     }
 
     function apiRequest(callback) {
-        const xhr = new XMLHttpRequest()
-
         const params = new URLSearchParams({
             city: city,
             country: country,
             method: String(method)
         })
-        var url = "https://api.aladhan.com/v1/timingsByCity?" + params.toString()
-        xhr.open("GET", url)
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE)
-                return
-
-            let data = null
-            if (xhr.responseText) {
-                try {
-                    data = JSON.parse(xhr.responseText)
-                } catch (e) {
-                    data = null
-                }
-            }
-
-            const ok = xhr.status >= 200 && xhr.status < 300
-            callback(data, xhr.status, ok ? "" : (xhr.status ? ("Aladhan HTTP " + xhr.status) : "Prayer times request failed"))
-        }
-
-        xhr.send(null)
+        http.request({
+            url: "https://api.aladhan.com/v1/timingsByCity?" + params.toString(),
+            callback: callback
+        })
     }
 
     function refreshAll() {

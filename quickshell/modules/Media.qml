@@ -1,83 +1,66 @@
 import QtQuick
-import Quickshell.Services.Mpris
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../components"
+import "../services"
 
 Rectangle {
     id: media
     anchors.verticalCenter: parent.verticalCenter
+    color: Styles.media.color
+    radius: Styles.media.radius
 
     property alias text: label
-    property int titleMaxLength: 24
-    property int artistMaxLength: 16
-    property int albumMaxLength: 16
-    
-    Component.onCompleted: {
-        Styler.apply(media, Styles.media)
-        Styler.apply(label, Styles.media.text)
-    }
+    property int titleMaxLength: Styles.media.titleMaxLength
+    property int artistMaxLength: Styles.media.artistMaxLength
+    property int albumMaxLength: Styles.media.albumMaxLength
 
     function truncate(str, max) {
         if (!str || max <= 0) return str ?? ""
         return str.length > max ? str.slice(0, max - 1) + "…" : str
     }
-    function isRealPlayer(p) {
-        const entry = (p?.desktopEntry ?? "").toLowerCase()
-        const identity = (p?.identity ?? "").toLowerCase()
-        return p && (entry === "spotify"
-            || identity.includes("youtube-music")
-            || identity.includes("mixtapes"))
-    }
-    
-    property MprisPlayer player: {
-        const players = Mpris.players.values
-        for (const p of players)
-            if (p.isPlaying && isRealPlayer(p)) return p
-        for (const p of players)
-            if (isRealPlayer(p)) return p
-        return null
-    }
-
-    function formatTime(seconds) {
-        if (seconds == null || seconds < 0 || !isFinite(seconds))
-            return "0:00"
-        const total = Math.floor(seconds)
-        const h = Math.floor(total / 3600)
-        const m = Math.floor((total % 3600) / 60)
-        const s = total % 60
-        const ss = s < 10 ? "0" + s : "" + s
-        if (h > 0) {
-            const mm = m < 10 ? "0" + m : "" + m
-            return h + ":" + mm + ":" + ss
-        }
-        return m + ":" + ss
-    }
-
-    readonly property string playTime: player
-        ? "[" + formatTime(player.position) + "/" + formatTime(player.length) + "]"
-        : ""
-
-    Timer {
-        running: media.player && media.player.isPlaying
-        repeat: true
-        interval: 500
-        onTriggered: if (media.player) media.player.positionChanged()
-    }
-
-    BetterText {
-        id: label
-        anchors.centerIn: parent
-        text: media.player
-            ? media.truncate(media.player.trackTitle || "", media.titleMaxLength)
-                + " - " + media.truncate(media.player.trackArtist || "", media.artistMaxLength)
-                + " - " + media.truncate(media.player.trackAlbum || "", media.albumMaxLength)
-                + " " + media.playTime
-            : "No Music"
-    }
 
     MediaMenu {
         id: menu
+    }
+
+    Row {
+        id: content
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        spacing: Styles.media.oscilloscope.anchors.leftMargin
+
+        BetterText {
+            id: label
+            color: Styles.media.text.color
+            font.family: Styles.media.text.font.family
+            font.bold: Styles.media.text.font.bold
+            text: PlayerService.active
+                ? media.truncate(PlayerService.trackTitle || "", media.titleMaxLength)
+                    + " - " + media.truncate(PlayerService.trackArtist || "", media.artistMaxLength)
+                    + " - " + media.truncate(PlayerService.trackAlbum || "", media.albumMaxLength)
+                    + " " + PlayerService.playTime
+                : "No Music"
+        }
+
+        Item {
+            id: scopeSlot
+            visible: PlayerService.active
+            width: scope.displayWidth
+            height: scope.displayHeight
+
+            Oscilloscope {
+                id: scope
+                anchors.fill: parent
+                displayWidth: Styles.media.oscilloscope.width
+                displayHeight: Styles.media.oscilloscope.height
+                lineWidth: Styles.media.oscilloscope.lineWidth
+                traceColor: Styles.media.oscilloscope.color
+                backgroundColor: Styles.media.oscilloscope.background
+                visible: PlayerService.isPlaying
+                running: PlayerService.isPlaying
+            }
+        }
     }
 
     MouseArea {
@@ -88,28 +71,20 @@ Rectangle {
         }
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                if (media.player.canPause) media.player.pause()
-                if (media.player.canPlay) media.player.play()
+                PlayerService.togglePlayPause()
             } else if (mouse.button === Qt.RightButton) {
                 menu.anchorTarget = media
                 menu.open = true
             }
         }
         onWheel: (wheel) => {
-            if (!media.player) return
+            if (!PlayerService.active) return
             if (wheel.angleDelta.y > 0)
-                media.player.next()
+                PlayerService.next()
             else if (wheel.angleDelta.y < 0)
-                media.player.previous()
+                PlayerService.previous()
         }
     }
 
-    Cava {
-        height: media.implicitHeight - 2
-        anchors.left: label.right
-        visible: media.player && media.player.isPlaying
-        cavaProcess.running: media.player && media.player.isPlaying
-        }
-
-    implicitWidth: label.paintedWidth + 20
+    implicitWidth: content.implicitWidth + 20
 }

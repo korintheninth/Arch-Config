@@ -6,13 +6,13 @@ import QtQuick.Controls
 import Quickshell.Services.UPower
 import "../components"
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 PopupWindow {
     id: hwmenu
     color: "transparent"
-    implicitHeight: column.height + 10
-    implicitWidth: column.width + 10
+    readonly property int surfacePad: 2
+    implicitHeight: column.height + 2 * Styles.hwMenu.padding + 2 * surfacePad
+    implicitWidth: column.width + 2 * Styles.hwMenu.padding + 2 * surfacePad
     
     property bool open: false
 
@@ -45,45 +45,64 @@ PopupWindow {
     property double diskUsage: 0
     property double cpuTemp: 0
     property double gpuTemp: 0
+    property var cpuHistory: []
+    property var gpuHistory: []
+    property var memHistory: []
     property int selectedMode: PowerProfiles.profile
     property var cpuProcesses: []
     property var memProcesses: []
+    property string fanMode: "auto"
 
-    function applyProcessRowStyles(row, nameText, pidText, usageText) {
-        Styler.apply(row, Styles.hwMenu.bars.processes.row)
-        Styler.apply(nameText, Styles.hwMenu.bars.processes.row.name)
-        Styler.apply(pidText, Styles.hwMenu.bars.processes.row.pid)
-        Styler.apply(usageText, Styles.hwMenu.bars.processes.row.usage)
+    function tempColor(temp) {
+        const s = Styles.hwMenu.temps
+        if (temp >= s.criticalThreshold)
+            return s.criticalColor
+        if (temp >= s.warningThreshold)
+            return s.warningColor
+        return s.baseColor
     }
 
-    function applyPowerButtonStyles(label, icon) {
-        Styler.apply(label, Styles.hwMenu.powerProfiles.buttonRow.button.text)
-        Styler.apply(icon, Styles.hwMenu.powerProfiles.buttonRow.button.icon)
+    function setFanMode(mode) {
+        fanMode = mode
+        if (mode === "auto")
+            Quickshell.execDetached(["nbfc", "set", "-a"])
+        else
+            Quickshell.execDetached(["nbfc", "set", "-s", mode])
     }
 
-    Component.onCompleted: {
-        Styler.apply(hwmenu, Styles.hwMenu)
-        Styler.apply(tempRow, Styles.hwMenu.temps.text)
-        Styler.apply(temps, Styles.hwMenu.temps)
-        Styler.apply(diskText, Styles.hwMenu.bars.text)
-        Styler.apply(diskBar, Styles.hwMenu.bars.bar)
-        Styler.apply(disk, Styles.hwMenu.bars)
-        Styler.apply(gpuText, Styles.hwMenu.bars.text)
-        Styler.apply(gpuBar, Styles.hwMenu.bars.bar)
-        Styler.apply(gpu, Styles.hwMenu.bars)
-        Styler.apply(cpuText, Styles.hwMenu.bars.text)
-        Styler.apply(cpuBar, Styles.hwMenu.bars.bar)
-        Styler.apply(cpuProcessList, Styles.hwMenu.bars.processes.list)
-        Styler.apply(cpu, Styles.hwMenu.bars)
-        cpu.height = Styles.hwMenu.bars.withProcessesHeight
-        Styler.apply(memText, Styles.hwMenu.bars.text)
-        Styler.apply(memBar, Styles.hwMenu.bars.bar)
-        Styler.apply(memProcessList, Styles.hwMenu.bars.processes.list)
-        Styler.apply(mem, Styles.hwMenu.bars)
-        mem.height = Styles.hwMenu.bars.withProcessesHeight
-        Styler.apply(powerProfiles, Styles.hwMenu.powerProfiles)
-        Styler.apply(powerLabel, Styles.hwMenu.powerProfiles.text)
-        Styler.apply(buttonRow, Styles.hwMenu.powerProfiles.buttonRow)
+    function checkFanSafety() {
+        if (fanMode !== "0")
+            return
+        const limit = Styles.hwMenu.fanControl.autoSwitchThreshold
+        if (cpuTemp >= limit || gpuTemp >= limit)
+            setFanMode("auto")
+    }
+
+    onCpuTempChanged: checkFanSafety()
+    onGpuTempChanged: checkFanSafety()
+
+    Process {
+        id: fetch_nbfc_status
+
+        running: true
+        command: ["nbfc", "status", "-a"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (/Auto Control Enabled\s*:\s*(true|yes)/i.test(text)) {
+                    hwmenu.fanMode = "auto"
+                    return
+                }
+                var speedMatch = text.match(/Target Fan Speed\s*:\s*([0-9.]+)/i)
+                if (!speedMatch)
+                    return
+                var speed = parseFloat(speedMatch[1])
+                if (speed <= 0.5)
+                    hwmenu.fanMode = "0"
+                else if (speed >= 99.5)
+                    hwmenu.fanMode = "100"
+                hwmenu.checkFanSafety()
+            }
+        }
     }
 
     Process {
@@ -112,8 +131,7 @@ PopupWindow {
             var parts = line.split(" ")
             return {
                 name: parts[0],
-                pid: parseInt(parts[1]),
-                usage: parseFloat(parts[2])
+                usage: parseFloat(parts[1])
             }
         }
         
@@ -139,25 +157,24 @@ PopupWindow {
 
     Rectangle {
         id: content
-        color: "transparent"
-        anchors.fill: parent
-
-        transform: Rotation {
-            id: xAxisRotation
-            origin.x: content.width / 2
-            axis { x: 1; y: 0; z: 0 } 
-            angle: -90 
-        }
+        x: hwmenu.surfacePad
+        y: -height
+        width: parent.width - 2 * hwmenu.surfacePad
+        height: parent.height - 2 * hwmenu.surfacePad
+        color: Styles.hwMenu.background.color
+        radius: Styles.hwMenu.background.radius
+        border.width: Styles.hwMenu.background.border.width
+        border.color: Styles.hwMenu.background.border.color
+        clip: radius > 0
 
         NumberAnimation {
             id: openAnim
-            target: xAxisRotation
-            property: "angle"
-            from: -90
-            to: 0
+            target: content
+            property: "y"
+            from: -content.height
+            to: hwmenu.surfacePad
             duration: 300
-            
-            easing.type: Easing.OutBack
+            easing.type: Easing.OutQuart
 
             onFinished: {
                 if (!hwmenu.open)
@@ -169,13 +186,13 @@ PopupWindow {
             target: hwmenu
             function onOpenChanged() {
                 if (hwmenu.open) {
-                    xAxisRotation.angle = -90
-                    openAnim.from = -90
-                    openAnim.to = 0
+                    content.y = -content.height
+                    openAnim.from = -content.height
+                    openAnim.to = hwmenu.surfacePad
                     openAnim.start()
                 } else {
-                    openAnim.from = xAxisRotation.angle
-                    openAnim.to = -90
+                    openAnim.from = content.y
+                    openAnim.to = -content.height
                     openAnim.start()
                 }
             }
@@ -185,62 +202,41 @@ PopupWindow {
         Column {
             id: column
             anchors.centerIn: parent
-            anchors.verticalCenterOffset: -5
-            anchors.horizontalCenterOffset: 5
-            Rectangle {
-                id: temps
-
-                function tempColor(temp) {
-                    const s = Styles.hwMenu.temps
-                    if (temp >= s.criticalThreshold)
-                        return s.criticalColor
-                    if (temp >= s.warningThreshold)
-                        return s.warningColor
-                    return s.baseColor
-                }
-
-                Row {
-                    id: tempRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    spacing: 0
-
-                    BetterText {
-                        text: "Temps: CPU: "
-                        color: Styles.hwMenu.temps.baseColor
-                    }
-                    BetterText {
-                        text: hwmenu.cpuTemp + "°"
-                        color: temps.tempColor(hwmenu.cpuTemp)
-                    }
-                    BetterText {
-                        text: "  GPU: "
-                        color: Styles.hwMenu.temps.baseColor
-                    }
-                    BetterText {
-                        text: hwmenu.gpuTemp + "°"
-                        color: temps.tempColor(hwmenu.gpuTemp)
-                    }
-                }
-            }
+            spacing: Styles.hwMenu.spacing
             Rectangle {
                 id: disk
-                height: 60
-                width: 350
+                height: Styles.hwMenu.disk.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.disk.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
                 BetterText {
                     id: diskText
-                    text: "Disk Usage:"
+                    text: "Disk"
+                    color: Styles.hwMenu.section.header.color
                     anchors.left: parent.left
                     anchors.top: parent.top
+                    anchors.topMargin: Styles.hwMenu.section.header.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.section.header.anchors.leftMargin
                 }
                 HorizontalStatusBar {
                     id: diskBar
-                    height: 30
-                    width: 300
+                    height: Styles.hwMenu.bar.height
+                    width: Styles.hwMenu.bar.width
+                    leftMargin: Styles.hwMenu.bar.leftMargin
+                    radius: Styles.hwMenu.bar.radius
+                    color: Styles.hwMenu.bar.color
+                    barColor: Styles.hwMenu.bar.barColor
+                    label.color: Styles.hwMenu.bar.label.color
                     val: hwmenu.diskUsage
                     text: hwmenu.diskUsage
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
+                    anchors.bottomMargin: Styles.hwMenu.bar.anchors.bottomMargin
+                    anchors.leftMargin: Styles.hwMenu.bar.anchors.leftMargin
+                    anchors.topMargin: Styles.hwMenu.bar.anchors.topMargin
                 }
 
                 MouseArea {
@@ -257,158 +253,229 @@ PopupWindow {
             }
             Rectangle {
                 id: gpu
-                height: 60
-                width: 350
-                BetterText {
-                    id: gpuText
-                    text: "GPU Usage:"
+                height: Styles.hwMenu.gpu.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.gpu.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
+                Row {
+                    id: gpuHeader
                     anchors.left: parent.left
                     anchors.top: parent.top
+                    anchors.topMargin: Styles.hwMenu.section.header.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.section.header.anchors.leftMargin
+                    spacing: Styles.hwMenu.section.header.spacing
+
+                    BetterText {
+                        id: gpuText
+                        text: "GPU"
+                        color: Styles.hwMenu.section.header.color
+                    }
+                    BetterText {
+                        id: gpuTempText
+                        text: hwmenu.gpuTemp + "°"
+                        color: hwmenu.tempColor(hwmenu.gpuTemp)
+                    }
                 }
-                HorizontalStatusBar {
-                    id: gpuBar
-                    height: 30
-                    width: 300
-                    val: hwmenu.gpuUsage
+                UsageGraph {
+                    id: gpuGraph
+                    height: Styles.hwMenu.graph.height
+                    width: Styles.hwMenu.graph.width
+                    leftMargin: Styles.hwMenu.graph.leftMargin
+                    radius: Styles.hwMenu.graph.radius
+                    color: Styles.hwMenu.graph.color
+                    lineColor: Styles.hwMenu.graph.lineColor
+                    fillColor: Styles.hwMenu.graph.fillColor
+                    maxSamples: Styles.hwMenu.graph.maxSamples
+                    label.color: Styles.hwMenu.graph.label.color
+                    samples: hwmenu.gpuHistory
                     text: hwmenu.gpuUsage
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
+                    anchors.bottomMargin: Styles.hwMenu.graph.anchors.bottomMargin
+                    anchors.leftMargin: Styles.hwMenu.graph.anchors.leftMargin
+                    anchors.topMargin: Styles.hwMenu.graph.anchors.topMargin
                 }
             }
             Rectangle {
                 id: cpu
-                height: Styles.hwMenu.bars.withProcessesHeight
-
-                width: 350
-                BetterText {
-                    id: cpuText
-                    text: "CPU Usage:"
+                height: Styles.hwMenu.cpu.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.cpu.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
+                Row {
+                    id: cpuHeader
                     anchors.left: parent.left
                     anchors.top: parent.top
+                    anchors.topMargin: Styles.hwMenu.section.header.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.section.header.anchors.leftMargin
+                    spacing: Styles.hwMenu.section.header.spacing
+
+                    BetterText {
+                        id: cpuText
+                        text: "CPU"
+                        color: Styles.hwMenu.section.header.color
+                    }
+                    BetterText {
+                        id: cpuTempText
+                        text: hwmenu.cpuTemp + "°"
+                        color: hwmenu.tempColor(hwmenu.cpuTemp)
+                    }
                 }
-                HorizontalStatusBar {
-                    id: cpuBar
-                    height: 30
-                    width: 300
-                    val: hwmenu.cpuUsage
+                UsageGraph {
+                    id: cpuGraph
+                    height: Styles.hwMenu.graph.height
+                    width: Styles.hwMenu.graph.width
+                    leftMargin: Styles.hwMenu.graph.leftMargin
+                    radius: Styles.hwMenu.graph.radius
+                    color: Styles.hwMenu.graph.color
+                    lineColor: Styles.hwMenu.graph.lineColor
+                    fillColor: Styles.hwMenu.graph.fillColor
+                    maxSamples: Styles.hwMenu.graph.maxSamples
+                    label.color: Styles.hwMenu.graph.label.color
+                    samples: hwmenu.cpuHistory
                     text: hwmenu.cpuUsage
-                    anchors.top: cpuText.bottom
+                    anchors.top: cpuHeader.bottom
                     anchors.left: parent.left
+                    anchors.bottomMargin: Styles.hwMenu.graph.anchors.bottomMargin
+                    anchors.leftMargin: Styles.hwMenu.graph.anchors.leftMargin
+                    anchors.topMargin: Styles.hwMenu.graph.anchors.topMargin
                 }
                 Column {
                     id: cpuProcessList
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: cpuBar.bottom
+                    anchors.top: cpuGraph.bottom
                     anchors.bottom: parent.bottom
+                    anchors.topMargin: Styles.hwMenu.processes.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.processes.anchors.leftMargin
+                    anchors.rightMargin: Styles.hwMenu.processes.anchors.rightMargin
+                    anchors.bottomMargin: Styles.hwMenu.processes.anchors.bottomMargin
                     width: parent.width
                     Repeater {
                         model: hwmenu.cpuProcesses
                         delegate: Item {
                             id: cpuProcessRow
                             width: cpuProcessList.width
+                            height: Styles.hwMenu.processes.row.height
                             BetterText {
                                 id: cpuProcessName
                                 text: modelData.name
-                                width: parent.width * 0.4
+                                color: Styles.hwMenu.processes.row.name.color
                                 elide: Text.ElideRight
                                 anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            BetterText {
-                                id: cpuProcessPid
-                                text: modelData.pid
-                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.right: cpuProcessUsage.left
+                                anchors.rightMargin: Styles.hwMenu.processes.row.spacing
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             BetterText {
                                 id: cpuProcessUsage
                                 text: modelData.usage + "%"
+                                color: Styles.hwMenu.processes.row.usage.color
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-
-                            Component.onCompleted: hwmenu.applyProcessRowStyles(
-                                cpuProcessRow, cpuProcessName, cpuProcessPid, cpuProcessUsage)
                         }
                     }
                 }
             }
             Rectangle {
                 id: mem
-                height: Styles.hwMenu.bars.withProcessesHeight
-                width: 350
+                height: Styles.hwMenu.mem.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.mem.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
                 BetterText {
                     id: memText
-                    text: "Memory Usage:"
+                    text: "Memory"
+                    color: Styles.hwMenu.section.header.color
                     anchors.left: parent.left
                     anchors.top: parent.top
+                    anchors.topMargin: Styles.hwMenu.section.header.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.section.header.anchors.leftMargin
                 }
-                HorizontalStatusBar {
-                    id: memBar
-                    height: 30
-                    width: 300
-                    val: hwmenu.memUsage
+                UsageGraph {
+                    id: memGraph
+                    height: Styles.hwMenu.graph.height
+                    width: Styles.hwMenu.graph.width
+                    leftMargin: Styles.hwMenu.graph.leftMargin
+                    radius: Styles.hwMenu.graph.radius
+                    color: Styles.hwMenu.graph.color
+                    lineColor: Styles.hwMenu.graph.lineColor
+                    fillColor: Styles.hwMenu.graph.fillColor
+                    maxSamples: Styles.hwMenu.graph.maxSamples
+                    label.color: Styles.hwMenu.graph.label.color
+                    samples: hwmenu.memHistory
                     text: hwmenu.memUsage
                     anchors.top: memText.bottom
                     anchors.left: parent.left
+                    anchors.bottomMargin: Styles.hwMenu.graph.anchors.bottomMargin
+                    anchors.leftMargin: Styles.hwMenu.graph.anchors.leftMargin
+                    anchors.topMargin: Styles.hwMenu.graph.anchors.topMargin
                 }
                 Column {
                     id: memProcessList
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: memBar.bottom
+                    anchors.top: memGraph.bottom
                     anchors.bottom: parent.bottom
+                    anchors.topMargin: Styles.hwMenu.processes.anchors.topMargin
+                    anchors.leftMargin: Styles.hwMenu.processes.anchors.leftMargin
+                    anchors.rightMargin: Styles.hwMenu.processes.anchors.rightMargin
+                    anchors.bottomMargin: Styles.hwMenu.processes.anchors.bottomMargin
                     width: parent.width
                     Repeater {
                         model: hwmenu.memProcesses
                         delegate: Item {
                             id: memProcessRow
                             width: memProcessList.width
+                            height: Styles.hwMenu.processes.row.height
                             BetterText {
                                 id: memProcessName
                                 text: modelData.name
-                                width: parent.width * 0.4
+                                color: Styles.hwMenu.processes.row.name.color
                                 elide: Text.ElideRight
                                 anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            BetterText {
-                                id: memProcessPid
-                                text: modelData.pid
-                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.right: memProcessUsage.left
+                                anchors.rightMargin: Styles.hwMenu.processes.row.spacing
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             BetterText {
                                 id: memProcessUsage
                                 text: Math.round(modelData.usage) + " MB"
+                                color: Styles.hwMenu.processes.row.usage.color
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-
-                            Component.onCompleted: hwmenu.applyProcessRowStyles(
-                                memProcessRow, memProcessName, memProcessPid, memProcessUsage)
                         }
                     }
                 }
             }
             Rectangle {
                 id: powerProfiles
-                height: 60
-                width: 350
-                BetterText {
-                    id: powerLabel
-                    text: "Power Mode:"
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                }
+                height: Styles.hwMenu.powerProfiles.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.powerProfiles.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
                 Row {
                     id: buttonRow
                     property var icons: ["", "", ""]
-                    property int buttonWidth: 100
-                    property int buttonHeight: 30
-                    anchors.left: parent.left
-                    anchors.bottom: parent.bottom
+                    property int buttonWidth: Styles.hwMenu.toggleButton.width
+                    property int buttonHeight: Styles.hwMenu.toggleButton.height
+                    height: buttonHeight
+                    width: parent.width
+                    anchors.centerIn: parent
                     property real gap: (powerProfiles.width - 3 * buttonWidth)/4
                     spacing: gap
                     leftPadding: gap
@@ -425,18 +492,77 @@ PopupWindow {
                             BetterText {
                                 id: label
                                 text: buttonRow.icons[index]
+                                color: parent.checked
+                                    ? Styles.hwMenu.powerProfiles.text.checkedColor
+                                    : Styles.hwMenu.powerProfiles.text.normalColor
+                                font.family: Styles.hwMenu.powerProfiles.text.font.family
+                                font.pixelSize: Styles.hwMenu.powerProfiles.text.font.pixelSize
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             background: Rectangle {
-                                id: icon
-                                property color checkedColor: "black"
-                                property color normalColor: "white"
-                                color: checked ? checkedColor : normalColor
+                                color: checked
+                                    ? Styles.hwMenu.toggleButton.background.checkedColor
+                                    : Styles.hwMenu.toggleButton.background.normalColor
+                                radius: Styles.hwMenu.toggleButton.background.radius
+                                border.color: Styles.hwMenu.toggleButton.background.border.color
+                                border.width: Styles.hwMenu.toggleButton.background.border.width
                                 anchors.fill: parent
                             }
-
-                            Component.onCompleted: hwmenu.applyPowerButtonStyles(label, icon)
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                id: fanControl
+                height: Styles.hwMenu.fanControl.height
+                width: Styles.hwMenu.section.width
+                color: Styles.hwMenu.section.color
+                radius: Styles.hwMenu.fanControl.radius
+                clip: radius > 0
+                border.width: Styles.hwMenu.section.border.width
+                border.color: Styles.hwMenu.section.border.color
+                Row {
+                    id: fanButtonRow
+                    property var labels: ["Auto", "0", "100"]
+                    property var modes: ["auto", "0", "100"]
+                    property int buttonWidth: Styles.hwMenu.toggleButton.width
+                    property int buttonHeight: Styles.hwMenu.toggleButton.height
+                    height: buttonHeight
+                    width: parent.width
+                    anchors.centerIn: parent
+                    property real gap: (fanControl.width - 3 * buttonWidth)/4
+                    spacing: gap
+                    leftPadding: gap
+                    rightPadding: gap
+                    Repeater {
+                        model: fanButtonRow.labels
+                        delegate: Button {
+                            implicitHeight: fanButtonRow.buttonHeight
+                            implicitWidth: fanButtonRow.buttonWidth
+                            padding: 0
+                            checkable: true
+                            checked: hwmenu.fanMode === fanButtonRow.modes[index]
+                            onClicked: hwmenu.setFanMode(fanButtonRow.modes[index])
+                            BetterText {
+                                text: modelData
+                                color: parent.checked
+                                    ? Styles.hwMenu.fanControl.text.checkedColor
+                                    : Styles.hwMenu.fanControl.text.normalColor
+                                font.family: Styles.hwMenu.fanControl.text.font.family
+                                font.pixelSize: Styles.hwMenu.fanControl.text.font.pixelSize
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            background: Rectangle {
+                                color: checked
+                                    ? Styles.hwMenu.toggleButton.background.checkedColor
+                                    : Styles.hwMenu.toggleButton.background.normalColor
+                                radius: Styles.hwMenu.toggleButton.background.radius
+                                border.color: Styles.hwMenu.toggleButton.background.border.color
+                                border.width: Styles.hwMenu.toggleButton.background.border.width
+                                anchors.fill: parent
+                            }
                         }
                     }
                 }

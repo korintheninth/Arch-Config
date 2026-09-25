@@ -2,28 +2,22 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell.Hyprland
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 import "../components"
 
 Item {
     id: workspaces
     property int count: Hyprland.workspaces.values.length
-    property int buttonWidth: 20
-    property int spacing: 0
+    property int buttonWidth: Styles.workspaces.button.width
+    property int spacing: Styles.workspaces.spacing
     property alias background: bg
 
     implicitWidth: count * buttonWidth + Math.max(0, count - 1) * spacing
 
-    function applyWorkspaceButtonTextStyle(target) {
-        if (Styles.workspaces.button.text)
-            Styler.apply(target, Styles.workspaces.button.text)
-    }
-
-    Component.onCompleted: Styler.apply(workspaces, Styles.workspaces)
-
     Rectangle {
         id: bg
         anchors.fill: parent
+        color: Styles.workspaces.background.color
+        radius: Styles.workspaces.background.radius
     }
 
     Row {
@@ -59,11 +53,11 @@ Item {
                     color: wsButton.checked
                         ? wsButton.btnStyle.checked.text
                         : wsButton.btnStyle.unchecked.text
+                    font.family: wsButton.btnStyle.text.font.family
+                    font.bold: wsButton.btnStyle.text.font.bold
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     anchors.fill: parent
-
-                    Component.onCompleted: workspaces.applyWorkspaceButtonTextStyle(this)
                 }
             }
         }

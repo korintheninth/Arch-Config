@@ -13,11 +13,20 @@ Rectangle {
     property alias label: label
     color: "white"
 
-    Rectangle {
-        id: bar
-        height: statusBar.height
+    Item {
+        id: fillClip
+        anchors.left: parent.left
+        anchors.top: parent.top
+        height: parent.height
         width: parent.width * (statusBar.val - statusBar.min) / (statusBar.max - statusBar.min)
-        color: statusBar.barColor
+        clip: true
+
+        Rectangle {
+            width: statusBar.width
+            height: statusBar.height
+            radius: statusBar.radius
+            color: statusBar.barColor
+        }
     }
     BetterText {
         id: label

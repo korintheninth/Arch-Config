@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import "../themes"
-import "../themes/StyleEngine.js" as Styler
 
 Item {
     id: trayMenuItem
@@ -30,39 +29,43 @@ Item {
         return t.trim()
     }
 
-    readonly property color textColor: rowMa.containsMouse ? hoverTextColor : normalTextColor
+    readonly property bool itemHovered: rowMa.containsMouse || !!(subMenu?.treeHovered)
+    readonly property real contentFade: entry.enabled ? enabledOpacity : disabledOpacity
+    readonly property color textColor: {
+        const base = itemHovered ? hoverTextColor : normalTextColor
+        return Qt.rgba(base.r, base.g, base.b, base.a * contentFade)
+    }
 
-    property int rowHeight: 26
-    property int horizontalPadding: 8
-    property int spacing: 6
-    property int iconSize: 14
-    property real enabledOpacity: 1
-    property real disabledOpacity: 0.4
-    property color normalTextColor: "#e5e0cc"
-    property color hoverColor: "transparent"
-    property color hoverTextColor: "#599d8b"
+    property int rowHeight: _itemStyle.rowHeight ?? 26
+    property int horizontalPadding: _itemStyle.horizontalPadding ?? 8
+    property int spacing: _itemStyle.spacing ?? 6
+    property int iconSize: _itemStyle.iconSize ?? 14
+    property real enabledOpacity: _itemStyle.enabledOpacity ?? 1
+    property real disabledOpacity: _itemStyle.disabledOpacity ?? 0.4
+    property color normalTextColor: _itemStyle.normalTextColor ?? "#e5e0cc"
+    property color hoverColor: _itemStyle.hoverColor ?? "transparent"
+    property color hoverTextColor: _itemStyle.hoverTextColor ?? "#599d8b"
 
     property alias label: labelItem
     property alias chevron: chevronItem
 
     implicitWidth: labelItem.paintedWidth + horizontalPadding * 2
     implicitHeight: entry.isSeparator ? separatorRow.rowHeight : rowHeight
-    opacity: entry.enabled ? enabledOpacity : disabledOpacity
 
     Item {
         id: separatorRow
         visible: entry.isSeparator
         anchors.fill: parent
-        property int rowHeight: 9
-        property int horizontalMargin: 8
+        property int rowHeight: _separatorStyle.rowHeight ?? 9
+        property int horizontalMargin: _separatorStyle.horizontalMargin ?? 8
         property alias line: separatorLine
 
         Rectangle {
             id: separatorLine
             anchors.centerIn: parent
             width: parent.width - separatorRow.horizontalMargin * 2
-            height: 1
-            color: "#e5e0cc"
+            height: _separatorStyle.line?.height ?? 1
+            color: _separatorStyle.line?.color ?? "#e5e0cc"
         }
     }
 
@@ -70,7 +73,7 @@ Item {
         id: hoverBg
         visible: !entry.isSeparator
         anchors.fill: parent
-        color: rowMa.containsMouse ? hoverColor : "transparent"
+        color: itemHovered ? hoverColor : "transparent"
     }
 
     property var subMenu: null
@@ -79,18 +82,19 @@ Item {
         id: subMenuCloseTimer
         interval: 150
         onTriggered: {
-            if (!rowMa.containsMouse && !(subMenu?.hovered))
+            if (!rowMa.containsMouse && !(subMenu?.treeHovered))
                 closeSubMenu()
         }
     }
 
     Connections {
         target: subMenu
-        function onHoveredChanged() {
-            if (subMenu?.hovered)
+        function onTreeHoveredChanged() {
+            if (subMenu?.treeHovered)
                 subMenuCloseTimer.stop()
             else if (!rowMa.containsMouse)
                 subMenuCloseTimer.restart()
+            menuHost?.updateChildTreeHovered()
         }
     }
 
@@ -106,6 +110,7 @@ Item {
         const sm = subMenu
         subMenu = null
         sm.open = false
+        menuHost?.updateChildTreeHovered()
     }
 
     MouseArea {
@@ -146,6 +151,7 @@ Item {
             visible: entry.icon !== ""
             implicitSize: trayMenuItem.iconSize
             source: entry.icon
+            opacity: trayMenuItem.contentFade
         }
 
         BetterText {
@@ -153,6 +159,7 @@ Item {
             text: trayMenuItem.displayLabel
             color: trayMenuItem.textColor
             elide: Text.ElideRight
+            font.family: _itemStyle.label?.font?.family ?? Styles.fontFamily
         }
 
         BetterText {
@@ -160,15 +167,8 @@ Item {
             visible: entry.hasChildren
             text: "›"
             color: trayMenuItem.textColor
+            font.family: _itemStyle.chevron?.font?.family ?? Styles.fontFamily
         }
-    }
-
-    Component.onCompleted: {
-        Styler.apply(trayMenuItem, trayMenuItem._itemStyle)
-        Styler.apply(separatorRow, trayMenuItem._separatorStyle)
-        Styler.apply(separatorLine, trayMenuItem._separatorStyle.line)
-        Styler.apply(labelItem, trayMenuItem._itemStyle.label)
-        Styler.apply(chevronItem, trayMenuItem._itemStyle.chevron)
     }
 
     Component.onDestruction: closeSubMenu()
